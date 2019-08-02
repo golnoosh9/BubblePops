@@ -15,6 +15,7 @@ public class BubbleGrid : MonoBehaviour
     void Start()
     {
         BubbleShooter.BubbleComingIn += IncomingBubble;
+        BubbleShooter.BubbleArrived += CreateNewBubble;
         bubblePool = FindObjectOfType<BubblePool>();
         GenerateBubbles();
     }
@@ -52,6 +53,18 @@ public class BubbleGrid : MonoBehaviour
     {
         GameObject t = bubbleCoordinateMap[new Vector2(r, c)];
         bubblePool.ReturnToPool(t, true);
+        bubbleCoordinateMap.Remove(new Vector2(r,c));
+
+    }
+
+
+    void CreateNewBubble(int r, int c, int score)
+    {
+        Debug.Log("score: " + score);
+       GameObject t = bubblePool.GetFromPool(score);
+        bubbleCoordinateMap.Add(new Vector2(r, c), t);
+        t.GetComponent<BubbleDataID>().SetPosition(r, c);
+        t.SetActive(true);
         bubbleGrids[r, c] = score;
     }
 
@@ -59,5 +72,6 @@ public class BubbleGrid : MonoBehaviour
     private void OnDestroy()
     {
         BubbleShooter.BubbleComingIn -= IncomingBubble;
+        BubbleShooter.BubbleArrived -= CreateNewBubble;
     }
 }

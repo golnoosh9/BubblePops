@@ -1,24 +1,31 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BubbleShooter : MonoBehaviour
 {
     public delegate void RetVoidArg3Int(int i1, int i2, int i3);
     public static event RetVoidArg3Int BubbleComingIn;
+    public static event RetVoidArg3Int BubbleArrived;
     Rigidbody2D rb;
     RectTransform rect;
     Vector2 currentVelocity;
     bool shoot = false;
+    Vector3 middlePosition;
+    int collidingRow;
+    int collidingCol;
 
     RaycastHit2D hitWall;
     RaycastHit2D hitBall;
     MoveBubble moveBubble;
+    int currentBubbleNumber=1;
     bool doneMove = false;
 
     private void Start()
     {
-        moveBubble = FindObjectOfType<MoveBubble>();
+        middlePosition = transform.position;
+      //  moveBubble = FindObjectOfType<MoveBubble>();
         rect = GetComponent<RectTransform>();
         rb = GetComponent<Rigidbody2D>();
     }
@@ -33,7 +40,7 @@ public class BubbleShooter : MonoBehaviour
             //  Touch touch = Input.GetTouch(0);
             Vector2 t = Camera.main.ScreenToWorldPoint(Input.mousePosition)-rect.position;
             hitBall = Physics2D.Raycast(transform.position, t,100,1<<10);//check for empty ball
-            Debug.Log("draw ray  "+hitBall.collider.gameObject.name);
+//            Debug.Log("draw ray  "+hitBall.collider.gameObject.name);
           //  Debug.DrawRay(transform.position, t, Color.red,100);
             if (hitBall.collider == null)
             {
@@ -44,39 +51,43 @@ public class BubbleShooter : MonoBehaviour
             //rb.velocity = t;
             shoot = false;
         }
+    
 
-        if(hitWall.collider==null &&hitBall.collider!=null&&doneMove==false)
+        if (hitWall.collider==null &&hitBall.collider!=null)
         {
+            if(doneMove==false)
+            {
+                collidingRow = hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().row;
+                collidingCol = hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().column;
+                BubbleComingIn(collidingRow,collidingCol,currentBubbleNumber);
+            }
+
             doneMove = true;
+            transform.position = Vector3.MoveTowards(transform.position, hitBall.transform.position, 2 * Time.deltaTime);
             // transform.position = Vector3.MoveTowards(transform.position,hitBall.transform.position, 2);
-            moveBubble.StartMove(hitBall.transform.position);
-            BubbleComingIn(hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().row, hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().column,
-      moveBubble.GetComponent<BubbleDataID>().bubbleNumber);
+          //  moveBubble.StartMove(hitBall.transform.position);
+           
         }
-      
+        if(hitBall.collider!=null && transform.position== hitBall.transform.position)
+        {
+            BubbleArrived(collidingRow, collidingCol, currentBubbleNumber);
+            hitBall = new RaycastHit2D();
+            hitWall = new RaycastHit2D();
+            doneMove = false;
+            AssignNewBubble();
+        }
+
         //rb.MovePosition(new Vector2(transform.position.x, transform.position.y) + currentVelocity * Time.deltaTime);
     }
 
+    void AssignNewBubble()
+    {
+
+        transform.position = middlePosition;
+        currentBubbleNumber = Random.Range(1, 8);
+        GetComponentInChildren<Image>().sprite = BubblePool.bubblePowerSprites[currentBubbleNumber];
+
+    }
 
 
-
-
-    //private void OnTriggerEnter2D(Collider2D collision)
-    //{
-       
-    //    if (collision.gameObject.tag == "Wall")
-    //    {
-
-    //        rb.velocity = new Vector2(-rb.velocity.x*1.1f, rb.velocity.y);
-    //      //  Debug.Log("collide  "+cur);
-
-    //    }
-    //    else if (collision.gameObject.tag == "Bubble")
-    //    {
-    //        Debug.Log("trigger");
-    //        rb.velocity = new Vector2(0, 0);
-    //    }
-    //}
-
-    
 }

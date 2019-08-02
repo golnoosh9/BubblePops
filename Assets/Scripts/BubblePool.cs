@@ -11,7 +11,7 @@ public class BubblePool : MonoBehaviour
     [SerializeField] GameObject bubblePrefab;
     [SerializeField] GameObject emptyBubblePrefab;
     [SerializeField] RectTransform bubbleParent;
-    Dictionary<int, Sprite> bubblePowerSprites = new Dictionary<int, Sprite>();
+    public static Dictionary<int, Sprite> bubblePowerSprites = new Dictionary<int, Sprite>();
     int poolSize = 0;
     int emptyBubblesSize = 0;
 
@@ -82,6 +82,24 @@ public class BubblePool : MonoBehaviour
             InitialWarmUp();
             return emptyBubbles[emptyBubblesSize];
         }
+    }
+
+    public GameObject GetFromPool(int bubbleValue)
+    {
+ 
+        if (poolSize >= 0)
+        {
+            GameObject t = bubbles[poolSize];
+            poolSize--;
+            t.GetComponent<BubbleDataID>().SetNum(bubbleValue);
+            t.GetComponentInChildren<Image>().sprite = bubblePowerSprites[bubbleValue];
+            return t;
+        }
+        InitialWarmUp();
+
+        bubbles[poolSize].GetComponent<BubbleDataID>().SetNum(bubbleValue);
+        bubbles[poolSize].GetComponentInChildren<Image>().sprite = bubblePowerSprites[bubbleValue];
+        return bubbles[poolSize];
     }
     public void ReturnToPool(GameObject b, bool isReturningEmpty)
     {
