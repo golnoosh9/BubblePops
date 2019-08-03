@@ -69,6 +69,7 @@ public class BubblePool : MonoBehaviour
             poolSize--;
             t.GetComponent<BubbleDataID>().SetNum(bubbleValue);
             t.GetComponentInChildren<Image>().sprite = bubblePowerSprites[bubbleValue];
+            t.GetComponent<BubbleAnimator>().ResetAnimation();
             return t;
         }
         InitialWarmUp();
@@ -81,6 +82,7 @@ public class BubblePool : MonoBehaviour
     {
        
             poolSize++;
+
             bubbles.Insert(poolSize, b);
 
         b.SetActive(false);

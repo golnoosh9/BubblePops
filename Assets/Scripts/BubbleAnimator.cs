@@ -36,6 +36,11 @@ public class BubbleAnimator : MonoBehaviour
         }
     }
 
+
+    public void ResetAnimation()
+    {
+        animator.SetTrigger("Idle");
+    }
     private void OnDisable()
     {
         BubbleGrid.BubbleActivityEvent -= CheckForAnimation;

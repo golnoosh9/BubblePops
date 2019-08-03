@@ -45,8 +45,9 @@ public class NeighborUtility : MonoBehaviour
             int nc = c + (int)directions[i].x;
             if (nr < 0 || nc < 0 || nr >= rowNum || nc >= colNum)
                 continue;
-            if(findChains==false)
+            if(findChains==false )
             {
+                if(bubbleGrids[nr, nc] > 0)
                 neighbors.Add(new Vector2Int(nc, nr));
             }
             else if (bubbleGrids[nr, nc] == value && neighbors.Contains(new Vector2Int(nc, nr))==false)
