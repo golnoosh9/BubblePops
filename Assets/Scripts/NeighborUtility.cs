@@ -13,41 +13,41 @@ public class NeighborUtility : MonoBehaviour
     {
         ClearNeighbor();
         if(bubbleGrids[r,c]==value)
-          neighbors.Add(new Vector2Int(r, c));
+          neighbors.Add(new Vector2Int(c, r));
         GetNeighborsWithValue(bubbleGrids, r, c, value, rowNum, colNum);
         if (bubbleGrids[r, c] == value)
-            neighbors.Remove(new Vector2Int(r, c));
+            neighbors.Remove(new Vector2Int(c, r));
         return neighbors;
     }
     public static  void GetNeighborsWithValue( int[,]bubbleGrids,int r, int c, int value,int rowNum, int colNum)
     {
-        Debug.Log("called:  " + r + "   " + c);
+       
         //List<Vector2Int> neighbors = new List<Vector2Int>();
         Vector2[] directions;
 
+
         if (r % 2 == 1)
         {
-            Vector2[] d = { new Vector2(-1, -1), new Vector2(-1, 0), new Vector2(0, -1), new Vector2(0, 1), new Vector2(1, -1), new Vector2(1, 0) };
+            Vector2[] d = { new Vector2(-1, -1), new Vector2(0, -1), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(-1, 1), new Vector2(1, 0) };
             directions = d;
         }
         else
         {
-            Vector2[] d = { new Vector2(-1, 0), new Vector2(-1, 1), new Vector2(0, -1), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) };
+            Vector2[] d = { new Vector2(-1, 0), new Vector2(1, -1), new Vector2(0, -1), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) };
             directions = d;
         }
 
         for (int i = 0; i < directions.Length; i++)
         {
-            int nr = r + (int)directions[i].x;
-            int nc = c + (int)directions[i].y;
+            int nr = r + (int)directions[i].y;
+            int nc = c + (int)directions[i].x;
             if (nr < 0 || nc < 0 || nr >= rowNum || nc >= colNum)
                 continue;
-            if (bubbleGrids[nr, nc] == value && neighbors.Contains(new Vector2Int(nr, nc))==false)
+            if (bubbleGrids[nr, nc] == value && neighbors.Contains(new Vector2Int(nc, nr))==false)
             {
-                neighbors.Add(new Vector2Int(nr, nc));
+                neighbors.Add(new Vector2Int(nc, nr));
                 if (value > 0)
                 {
-                    Debug.Log("added neighbor: " + nr + "   " + nc);
                      GetNeighborsWithValue(bubbleGrids, nr, nc, value, rowNum, colNum);
                 }
             }
@@ -68,29 +68,29 @@ public class NeighborUtility : MonoBehaviour
         int c;
         for (int i = 0; i < nodes.Count; i++)
         {
-            r = nodes[i].x;
-            c = nodes[i].y;
+            r = nodes[i].y;
+            c = nodes[i].x;
             Vector2[] directions;
 
             if (r % 2 == 1)
             {
-                Vector2[] d = { new Vector2(-1, -1), new Vector2(-1, 0), new Vector2(0, -1), new Vector2(0, 1), new Vector2(1, -1), new Vector2(1, 0) };
+                Vector2[] d = { new Vector2(-1, -1), new Vector2(0, -1), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(-1, 1), new Vector2(0, 1) };
                 directions = d;
             }
             else
             {
-                Vector2[] d = { new Vector2(-1, 0), new Vector2(-1, 1), new Vector2(0, -1), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) };
+                Vector2[] d = { new Vector2(-1, 0), new Vector2(1, -1), new Vector2(0, -1), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) };
                 directions = d;
             }
             for (int j = 0; j < directions.Length; j++)
             {
-                int nr = r + (int)directions[j].x;
-                int nc = c + (int)directions[j].y;
+                int nr = r + (int)directions[j].y;
+                int nc = c + (int)directions[j].x;
                 if (nr < 0 || nc < 0 || nr >= rowNum || nc >= colNum)
                     continue;
                 if (bubbleGrids[nr, nc] == value )
                 {
-                    return new Vector2Int(r, c);
+                    return new Vector2Int(c, r);
 
                 }
             }

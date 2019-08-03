@@ -48,20 +48,19 @@ public class BubblePool : MonoBehaviour
         }
         poolSize += initNum-1;
 
-        for (int i = 0; i < initEmptyBubbles; i++)
-        {
-            GameObject tempg = Instantiate(emptyBubblePrefab, bubbleParent);
-            tempg.name = "EmptyBubble_" + i;
-            tempg.SetActive(false);
-            emptyBubbles.Add(tempg);
-        }
-        emptyBubblesSize += initEmptyBubbles - 1;
+        //for (int i = 0; i < initEmptyBubbles; i++)
+        //{
+        //    GameObject tempg = Instantiate(emptyBubblePrefab, bubbleParent);
+        //    tempg.name = "EmptyBubble_" + i;
+        //    tempg.SetActive(false);
+        //    emptyBubbles.Add(tempg);
+        //}
+        //emptyBubblesSize += initEmptyBubbles - 1;
     }
 
-    public GameObject GetFromPool(bool isRequestingEmpty)
+    public GameObject GetFromPool()
     {
-        if (isRequestingEmpty == false)
-        {
+       
             if (poolSize >= 0)
             {
                 GameObject t = bubbles[poolSize];
@@ -70,18 +69,7 @@ public class BubblePool : MonoBehaviour
             }
             InitialWarmUp();
             return bubbles[poolSize];
-        }
-        else
-        {
-            if (emptyBubblesSize >= 0)
-            {
-                GameObject t = emptyBubbles[emptyBubblesSize];
-                emptyBubblesSize--;
-                return t;
-            }
-            InitialWarmUp();
-            return emptyBubbles[emptyBubblesSize];
-        }
+       
     }
 
     public GameObject GetFromPool(int bubbleValue)
@@ -101,19 +89,12 @@ public class BubblePool : MonoBehaviour
         bubbles[poolSize].GetComponentInChildren<Image>().sprite = bubblePowerSprites[bubbleValue];
         return bubbles[poolSize];
     }
-    public void ReturnToPool(GameObject b, bool isReturningEmpty)
+    public void ReturnToPool(GameObject b)
     {
-        if (isReturningEmpty == false)
-        {
+       
             poolSize++;
             bubbles.Insert(poolSize, b);
 
-        }
-        else
-        {
-            emptyBubblesSize++;
-            emptyBubbles.Insert(emptyBubblesSize, b);
-        }
         b.SetActive(false);
     }
 
