@@ -805,8 +805,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bubblePrefab: {fileID: 3135200866081289966, guid: 2a1f04e267e3241a894badda5b48bf8d,
     type: 3}
-  emptyBubblePrefab: {fileID: 3135200866081289966, guid: 2a91708b001244130b17d4a45b1c7ba9,
-    type: 3}
   bubbleParent: {fileID: 1553170299}
 --- !u!4 &1203772360
 Transform:

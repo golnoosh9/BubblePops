@@ -13,15 +13,18 @@ public class BubbleDataID : MonoBehaviour
     int lastNeighborR;
     int lastNeighborC;
     RectTransform rect;
+    float heightOffset;
 
     private void Awake()
     {
         rect = GetComponent<RectTransform>();
-       // thisRadius = GetComponentInChildren<CircleCollider2D>().radius;
-
+        // thisRadius = GetComponentInChildren<CircleCollider2D>().radius;
+        heightOffset = 1 *( 2 * thisRadius);
         row = -1;
         column = -1;
     }
+
+
 
     public void SetNum(int num)
     {
@@ -37,7 +40,7 @@ public class BubbleDataID : MonoBehaviour
             rowOffset = 1;
 
       //  rect.anchoredPosition = new Vector3(0, 0, 0);
-        rect.anchoredPosition = new Vector3(column * thisRadius*2f-rowOffset*thisRadius, -row*(thisRadius*2f)-thisRadius,0 );
+        rect.anchoredPosition = new Vector3(column * thisRadius*2f-rowOffset*thisRadius, -row*(thisRadius*2f)-thisRadius+heightOffset,0 );
     }
 
     public Vector3 GetNeighbor(Vector2 collisionPoint,float z)
@@ -67,8 +70,7 @@ public class BubbleDataID : MonoBehaviour
             lastNeighborC= column  - rowOffset;
             emptyNeighborPosition.x-=0.5f;// - thisRadius * 2;
         }
-      //  emptyNeighborPosition.y = -lastNeighborR*(thisRadius*2f)-thisRadius;
-    //    emptyNeighborPosition.x = lastNeighborC * thisRadius * 2f - thisOffset * thisRadius;
+
 
         return emptyNeighborPosition;
     }

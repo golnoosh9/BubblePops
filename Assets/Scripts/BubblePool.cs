@@ -7,16 +7,12 @@ using UnityEngine.UI;
 public class BubblePool : MonoBehaviour
 {
     List<GameObject> bubbles = new List<GameObject>();
-    List<GameObject> emptyBubbles = new List<GameObject>();
     [SerializeField] GameObject bubblePrefab;
-    [SerializeField] GameObject emptyBubblePrefab;
     [SerializeField] RectTransform bubbleParent;
     public static Dictionary<int, Sprite> bubblePowerSprites = new Dictionary<int, Sprite>();
     int poolSize = 0;
-    int emptyBubblesSize = 0;
 
-    int initNum = 50;
-    int initEmptyBubbles = 12;
+    int initNum = 65;
 
     private void Awake()
     {
@@ -48,14 +44,6 @@ public class BubblePool : MonoBehaviour
         }
         poolSize += initNum-1;
 
-        //for (int i = 0; i < initEmptyBubbles; i++)
-        //{
-        //    GameObject tempg = Instantiate(emptyBubblePrefab, bubbleParent);
-        //    tempg.name = "EmptyBubble_" + i;
-        //    tempg.SetActive(false);
-        //    emptyBubbles.Add(tempg);
-        //}
-        //emptyBubblesSize += initEmptyBubbles - 1;
     }
 
     public GameObject GetFromPool()

@@ -12,7 +12,7 @@ public class BubbleGrid : MonoBehaviour
     int rowNum = 10;
     int colNum = 6;
     BubblePool bubblePool;
-    int initialBubbleNum = 30;
+    int initialBubbleNum = 6*7;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,20 +33,14 @@ public class BubbleGrid : MonoBehaviour
             if (c == 0)
                 r++;
         }
-        //c = 0;
 
-        //for (int i = 1; i <= colNum-1; i++)
-        //{
-        //    AddBubbleOfTypeAt(r, i, -1, true);
-        //    c++;
-        //}
     }
 
 
     void IncomingBubble(int r,int c,int score)
     {
 
-      //  DeleteBubbleAt(r, c);
+
     }
 
 
@@ -55,13 +49,18 @@ public class BubbleGrid : MonoBehaviour
         List<Vector2Int> neighbors = new List<Vector2Int>();
      //   Debug.Log("score: " + score);
         AddBubbleOfTypeAt(r, c, score);
- 
-        neighbors= NeighborUtility.GetAllNeighbors(bubbleGrids, r, c, score, rowNum, colNum);
+        neighbors= NeighborUtility.GetAllNeighbors(bubbleGrids, r, c, score, rowNum, colNum, false);
+        for (int i = 0; i < neighbors.Count; i++)
+        {
+            BubbleActivityEvent(neighbors[i].y, neighbors[i].x, NeighborUtility.chainRounds, "Shake");
+        }
+        neighbors = NeighborUtility.GetAllNeighbors(bubbleGrids, r, c, score, rowNum, colNum,true);
 
         if (neighbors.Count > 0)
         {
             StartCoroutine(ProcessBubbleEffectInTime(r, c, score,neighbors));
         }
+      //  Debug.Log(ToString());
 
     }
 
@@ -88,16 +87,16 @@ IEnumerator ProcessBubbleEffectInTime(int r, int c, int score, List<Vector2Int> 
         }
         Vector2Int newBubblePosition = NeighborUtility.SearchInNodeNeighbors(neighbors, bubbleGrids, rowNum, colNum, newScore);
         MergeBubbles(neighbors, score);
-        yield return new WaitForSeconds(0.6f);
-        //  DeleteBubbleAt(newBubblePosition.y, newBubblePosition.x);
+        yield return new WaitForSeconds(1);
         CreateNewBubble(newBubblePosition.y, newBubblePosition.x, newScore);
+        BubbleActivityEvent(newBubblePosition.y, newBubblePosition.x, NeighborUtility.chainRounds, "Enlarge");
     }
 
     IEnumerator DeleteBubbleAt(int r, int c)
     {
         GameObject t = bubbleCoordinateMap[new Vector2Int(c, r)];
         BubbleActivityEvent(r, c, NeighborUtility.chainRounds, "Shrink");
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
         bubblePool.ReturnToPool(t);
         bubbleCoordinateMap.Remove(new Vector2Int(c, r));
         bubbleGrids[r, c] = 0;
@@ -124,4 +123,22 @@ IEnumerator ProcessBubbleEffectInTime(int r, int c, int score, List<Vector2Int> 
         BubbleShooter.BubbleComingIn -= IncomingBubble;
         BubbleShooter.BubbleArrived -= CreateNewBubble;
     }
+
+
+    public override string ToString()
+    {
+        string res = "";
+        for (int j = 0; j < 10; j++)
+        {
+
+
+            for (int i = 0; i < 6; i++)
+            {
+                res = res + bubbleGrids[j, i] + " , ";
+            }
+            res = res + "       ";
+        }
+        return res;
+    }
+
 }

@@ -9,19 +9,37 @@ public class BubbleAnimator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        bubbleData = GetComponent<BubbleDataID>();
+        //bubbleData = GetComponent<BubbleDataID>();
+        //animator = GetComponent<Animator>();
+        //BubbleGrid.BubbleActivityEvent += CheckForAnimation;
+        // animator = GetComponent<Animator>();
+    }
+
+
+    private void OnEnable()
+    {
+
         BubbleGrid.BubbleActivityEvent += CheckForAnimation;
+        bubbleData = GetComponent<BubbleDataID>();
         animator = GetComponent<Animator>();
+        //  animator.SetTrigger("Shake");
     }
 
 
     void CheckForAnimation(int r, int c, int dummy, string animationTrigger)
     {
+
         if (bubbleData.row == r && bubbleData.column == c)
+        {
+
             animator.SetTrigger(animationTrigger);
+        }
     }
 
-
+    private void OnDisable()
+    {
+        BubbleGrid.BubbleActivityEvent -= CheckForAnimation;
+    }
 
     private void OnDestroy()
     {

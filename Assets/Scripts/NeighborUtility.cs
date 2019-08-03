@@ -10,18 +10,18 @@ public class NeighborUtility : MonoBehaviour
     {
         neighbors = new List<Vector2Int>();
     }
-    public static List<Vector2Int> GetAllNeighbors(int[,] bubbleGrids, int r, int c, int value, int rowNum, int colNum)
+    public static List<Vector2Int> GetAllNeighbors(int[,] bubbleGrids, int r, int c, int value, int rowNum, int colNum,bool findChains)
     {
         ClearNeighbor();
         chainRounds = 0;
         if(bubbleGrids[r,c]==value)
           neighbors.Add(new Vector2Int(c, r));
-        GetNeighborsWithValue(bubbleGrids, r, c, value, rowNum, colNum);
+        GetNeighborsWithValue(bubbleGrids, r, c, value, rowNum, colNum,findChains);
         if (bubbleGrids[r, c] == value)
             neighbors.Remove(new Vector2Int(c, r));
         return neighbors;
     }
-    public static  void GetNeighborsWithValue( int[,]bubbleGrids,int r, int c, int value,int rowNum, int colNum)
+    public static  void GetNeighborsWithValue( int[,]bubbleGrids,int r, int c, int value,int rowNum, int colNum, bool findChains)
     {
        
         //List<Vector2Int> neighbors = new List<Vector2Int>();
@@ -45,14 +45,17 @@ public class NeighborUtility : MonoBehaviour
             int nc = c + (int)directions[i].x;
             if (nr < 0 || nc < 0 || nr >= rowNum || nc >= colNum)
                 continue;
-            if (bubbleGrids[nr, nc] == value && neighbors.Contains(new Vector2Int(nc, nr))==false)
+            if(findChains==false)
             {
                 neighbors.Add(new Vector2Int(nc, nr));
-                if (value > 0)
-                {
-                    chainRounds++;
-                     GetNeighborsWithValue(bubbleGrids, nr, nc, value, rowNum, colNum);
-                }
+            }
+            else if (bubbleGrids[nr, nc] == value && neighbors.Contains(new Vector2Int(nc, nr))==false)
+            {
+                neighbors.Add(new Vector2Int(nc, nr));
+
+                chainRounds++;
+                GetNeighborsWithValue(bubbleGrids, nr, nc, value, rowNum, colNum,findChains);
+
             }
         }
 
