@@ -44,7 +44,7 @@ public class BubbleGrid : MonoBehaviour
     void IncomingBubble(int r,int c,int score)
     {
 
-        DeleteBubbleAt(r, c, true);
+        DeleteBubbleAt(r, c);
     }
 
 
@@ -59,7 +59,15 @@ public class BubbleGrid : MonoBehaviour
         if (neighbors.Count > 0)
         {
             neighbors.Add(new Vector2Int(r, c));
+            int newScore = score;
+            for (int i = 0; i < neighbors.Count-1; i++)
+            {
+                newScore++;
+            }
+            Vector2Int newBubblePosition = NeighborUtility.SearchInNodeNeighbors(neighbors, bubbleGrids, rowNum, colNum, newScore);
             MergeBubbles(neighbors, score);
+            DeleteBubbleAt(newBubblePosition.x, newBubblePosition.y);
+            CreateNewBubble(newBubblePosition.x, newBubblePosition.y, newScore);
         }
         else
         {
@@ -70,22 +78,27 @@ public class BubbleGrid : MonoBehaviour
             }
         }
     }
-    
+
+
+
 
     void MergeBubbles(List<Vector2Int> bubbles,int score)
     {
  
         for (int i = 0; i < bubbles.Count; i++)
         {
-            DeleteBubbleAt(bubbles[i].x, bubbles[i].y,false);
+            DeleteBubbleAt(bubbles[i].x, bubbles[i].y);
 
         }
     }
 
 
-void DeleteBubbleAt(int r, int c, bool isEmpty)
+void DeleteBubbleAt(int r, int c)
     {
         GameObject t = bubbleCoordinateMap[new Vector2Int(r, c)];
+        bool isEmpty = false;
+        if (bubbleGrids[r, c] == -1)
+            isEmpty = true;
         bubblePool.ReturnToPool(t, isEmpty);
         bubbleCoordinateMap.Remove(new Vector2Int(r, c));
         if(isEmpty==false)//add empty bubble
@@ -96,6 +109,7 @@ void DeleteBubbleAt(int r, int c, bool isEmpty)
 
     void AddBubbleOfTypeAt(int r, int c, int score,bool isEmpty)
     {
+        bubbleCoordinateMap.Remove(new Vector2Int(r, c));
         GameObject t;
         if (isEmpty == false)
         {

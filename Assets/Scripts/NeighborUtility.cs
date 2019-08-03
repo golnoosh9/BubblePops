@@ -59,4 +59,43 @@ public class NeighborUtility : MonoBehaviour
 
        // return neighbors;
     }
+
+
+    public static Vector2Int SearchInNodeNeighbors( List<Vector2Int> nodes,int[,]bubbleGrids,int rowNum, int colNum, int value)
+    {
+
+        int r;
+        int c;
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            r = nodes[i].x;
+            c = nodes[i].y;
+            Vector2[] directions;
+
+            if (r % 2 == 1)
+            {
+                Vector2[] d = { new Vector2(-1, -1), new Vector2(-1, 0), new Vector2(0, -1), new Vector2(0, 1), new Vector2(1, -1), new Vector2(1, 0) };
+                directions = d;
+            }
+            else
+            {
+                Vector2[] d = { new Vector2(-1, 0), new Vector2(-1, 1), new Vector2(0, -1), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) };
+                directions = d;
+            }
+            for (int j = 0; j < directions.Length; j++)
+            {
+                int nr = r + (int)directions[j].x;
+                int nc = c + (int)directions[j].y;
+                if (nr < 0 || nc < 0 || nr >= rowNum || nc >= colNum)
+                    continue;
+                if (bubbleGrids[nr, nc] == value )
+                {
+                    return new Vector2Int(r, c);
+
+                }
+            }
+
+        }
+        return nodes[0];
+    }
 }
