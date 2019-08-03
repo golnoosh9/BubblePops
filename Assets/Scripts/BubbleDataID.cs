@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class BubbleDataID : MonoBehaviour
 {
-    [SerializeField] public int bubbleNumber;// { get; private set; }
+    public int bubbleNumber { get; private set; }
     public int row { get; private set; }
     public int column { get; private set; }
-    float thisRadius=150f;
-    float rowOffset = 0;
+    int thisRadius=150;
+    int rowOffset = 0;
     RectTransform rect;
 
     private void Awake()
@@ -27,12 +27,13 @@ public class BubbleDataID : MonoBehaviour
 
     public void SetPosition(int r, int c)
     {
+        rowOffset = 0;
         row = r;
         column = c;
-        if (r % 2 == 1)
+        if (row % 2 == 1)
             rowOffset = 1;
 
       //  rect.anchoredPosition = new Vector3(0, 0, 0);
-        rect.anchoredPosition = new Vector3(c * thisRadius*2f-rowOffset*thisRadius, -r*(thisRadius*2f)-thisRadius,0 );
+        rect.anchoredPosition = new Vector3(column * thisRadius*2f-rowOffset*thisRadius, -row*(thisRadius*2f)-thisRadius,0 );
     }
 }

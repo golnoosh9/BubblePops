@@ -18,9 +18,13 @@ public class BubbleShooter : MonoBehaviour
 
     RaycastHit2D hitWall;
     RaycastHit2D hitBall;
+
+    List<Vector3> target;
+    bool reachedTarget;
     MoveBubble moveBubble;
     int currentBubbleNumber=1;
     bool doneMove = false;
+    bool startMove;
 
     private void Start()
     {
@@ -28,16 +32,18 @@ public class BubbleShooter : MonoBehaviour
       //  moveBubble = FindObjectOfType<MoveBubble>();
         rect = GetComponent<RectTransform>();
         rb = GetComponent<Rigidbody2D>();
+        target = new List<Vector3>();
     }
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
+            reachedTarget = true;
             shoot = true;
         }
         if (shoot)
         {
-            //  Touch touch = Input.GetTouch(0);
+            target = new List<Vector3>();
             Vector2 t = Camera.main.ScreenToWorldPoint(Input.mousePosition)-rect.position;
             hitBall = Physics2D.Raycast(transform.position, t,100,1<<10);//check for empty ball
 //            Debug.Log("draw ray  "+hitBall.collider.gameObject.name);
@@ -45,36 +51,51 @@ public class BubbleShooter : MonoBehaviour
             if (hitBall.collider == null)
             {
                 hitWall = Physics2D.Raycast(transform.position, t,100, 1 << 9);
-                hitBall = Physics2D.Raycast(hitWall.transform.position, new Vector2(-t.x, t.y),100, 1 << 10);
+                hitBall = Physics2D.Raycast(hitWall.point, new Vector2(-t.x, t.y),100, 1 << 10);
+                Debug.Log("wall intersect: " + hitWall.point+"   "+ new Vector2(-t.x, t.y));
+                if(hitBall.collider!=null)
+                target.Add(new Vector3(hitWall.point.x,hitWall.point.y,transform.position.z));
+            
             }
-            //currentVelocity = t;
-            //rb.velocity = t;
-            shoot = false;
+                if(hitBall.collider!=null)
+                 target.Add(hitBall.collider.transform.position);
+
+
+
+            if(Input.GetMouseButtonUp(0)&& target.Count>0)
+            {
+                reachedTarget = false;
+                shoot = false;
+                startMove = true;
+                collidingRow = hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().row;
+                collidingCol = hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().column;
+                BubbleComingIn(collidingRow, collidingCol, currentBubbleNumber);
+            }
+
         }
     
 
-        if (hitWall.collider==null &&hitBall.collider!=null)
-        {
-            if(doneMove==false)
-            {
-                collidingRow = hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().row;
-                collidingCol = hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().column;
-                BubbleComingIn(collidingRow,collidingCol,currentBubbleNumber);
-            }
 
-            doneMove = true;
-            transform.position = Vector3.MoveTowards(transform.position, hitBall.transform.position, 2 * Time.deltaTime);
-            // transform.position = Vector3.MoveTowards(transform.position,hitBall.transform.position, 2);
-          //  moveBubble.StartMove(hitBall.transform.position);
-           
-        }
-        if(hitBall.collider!=null && transform.position== hitBall.transform.position)
+        if(reachedTarget==false && target.Count>0)
         {
-            BubbleArrived(collidingRow, collidingCol, currentBubbleNumber);
-            hitBall = new RaycastHit2D();
-            hitWall = new RaycastHit2D();
-            doneMove = false;
-            AssignNewBubble();
+            transform.position = Vector3.MoveTowards(transform.position, target[0], 2 * Time.deltaTime);
+        }
+
+        if (reachedTarget==false &&target.Count>0 && transform.position== target[0])
+        {
+            target.RemoveAt(0);
+            reachedTarget = true;
+            if (target.Count == 0)
+            {
+                BubbleArrived(collidingRow, collidingCol, currentBubbleNumber);
+                hitBall = new RaycastHit2D();
+                hitWall = new RaycastHit2D();
+                AssignNewBubble();
+            }
+            else
+                reachedTarget = false;
+
+
         }
 
         //rb.MovePosition(new Vector2(transform.position.x, transform.position.y) + currentVelocity * Time.deltaTime);

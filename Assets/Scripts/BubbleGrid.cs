@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class BubbleGrid : MonoBehaviour
 {
-    Dictionary<Vector2, GameObject> bubbleCoordinateMap = new Dictionary<Vector2, GameObject>();
+    Dictionary<Vector2Int, GameObject> bubbleCoordinateMap = new Dictionary<Vector2Int, GameObject>();
     int[,] bubbleGrids = new int[10,6];
     int rowNum = 10;
     int colNum = 6;
@@ -26,11 +26,7 @@ public class BubbleGrid : MonoBehaviour
         int c = 0;
         for (int i = 0; i < initialBubbleNum; i++)
         {
-            GameObject t = bubblePool.GetFromPool(false);
-            t.GetComponent<BubbleDataID>().SetPosition(r, c);
-            bubbleCoordinateMap.Add(new Vector2(r, c), t);
-            bubbleGrids[r, c] = t.GetComponent<BubbleDataID>().bubbleNumber;
-            t.SetActive(true);
+            AddBubbleOfTypeAt(r, c, Random.Range(1, 9), false);
             c = (c + 1) % colNum;
             if (c == 0)
                 r++;
@@ -39,11 +35,7 @@ public class BubbleGrid : MonoBehaviour
 
         for (int i = 1; i <= colNum-1; i++)
         {
-            GameObject t = bubblePool.GetFromPool(true);
-            bubbleCoordinateMap.Add(new Vector2(r, i), t);
-            t.GetComponent<BubbleDataID>().SetPosition(r, i);
-            bubbleGrids[r, i] = 0;
-            t.SetActive(true);
+            AddBubbleOfTypeAt(r, i, -1, true);
             c++;
         }
     }
@@ -51,21 +43,73 @@ public class BubbleGrid : MonoBehaviour
 
     void IncomingBubble(int r,int c,int score)
     {
-        GameObject t = bubbleCoordinateMap[new Vector2(r, c)];
-        bubblePool.ReturnToPool(t, true);
-        bubbleCoordinateMap.Remove(new Vector2(r,c));
 
+        DeleteBubbleAt(r, c, true);
     }
 
 
     void CreateNewBubble(int r, int c, int score)
     {
-        Debug.Log("score: " + score);
-       GameObject t = bubblePool.GetFromPool(score);
-        bubbleCoordinateMap.Add(new Vector2(r, c), t);
-        t.GetComponent<BubbleDataID>().SetPosition(r, c);
-        t.SetActive(true);
-        bubbleGrids[r, c] = score;
+        List<Vector2Int> neighbors = new List<Vector2Int>();
+     //   Debug.Log("score: " + score);
+        AddBubbleOfTypeAt(r, c, score,false);
+ 
+        neighbors= NeighborUtility.GetAllNeighbors(bubbleGrids, r, c, score, rowNum, colNum);
+
+        if (neighbors.Count > 0)
+        {
+            neighbors.Add(new Vector2Int(r, c));
+            MergeBubbles(neighbors, score);
+        }
+        else
+        {
+           neighbors= NeighborUtility.GetAllNeighbors(bubbleGrids, r, c, 0, rowNum, colNum);
+            for (int i = 0; i < neighbors.Count; i++)
+            {
+                AddBubbleOfTypeAt(neighbors[i].x, neighbors[i].y, -1, true);
+            }
+        }
+    }
+    
+
+    void MergeBubbles(List<Vector2Int> bubbles,int score)
+    {
+ 
+        for (int i = 0; i < bubbles.Count; i++)
+        {
+            DeleteBubbleAt(bubbles[i].x, bubbles[i].y,false);
+
+        }
+    }
+
+
+void DeleteBubbleAt(int r, int c, bool isEmpty)
+    {
+        GameObject t = bubbleCoordinateMap[new Vector2Int(r, c)];
+        bubblePool.ReturnToPool(t, isEmpty);
+        bubbleCoordinateMap.Remove(new Vector2Int(r, c));
+        if(isEmpty==false)//add empty bubble
+        {
+            AddBubbleOfTypeAt(r, c, -1, true);
+        }
+    }
+
+    void AddBubbleOfTypeAt(int r, int c, int score,bool isEmpty)
+    {
+        GameObject t;
+        if (isEmpty == false)
+        {
+            t = bubblePool.GetFromPool(score);
+        }
+        else
+        {
+            t = bubblePool.GetFromPool(true);
+        }
+        bubbleCoordinateMap.Add(new Vector2Int(r, c), t);
+            t.GetComponent<BubbleDataID>().SetPosition(r, c);
+            t.SetActive(true);
+            bubbleGrids[r, c] = score;
+
     }
 
 
