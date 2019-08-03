@@ -5,6 +5,7 @@ using UnityEngine;
 public class NeighborUtility : MonoBehaviour
 {
     public static List<Vector2Int> neighbors;
+    public static int chainRounds;
     public static void ClearNeighbor()
     {
         neighbors = new List<Vector2Int>();
@@ -12,6 +13,7 @@ public class NeighborUtility : MonoBehaviour
     public static List<Vector2Int> GetAllNeighbors(int[,] bubbleGrids, int r, int c, int value, int rowNum, int colNum)
     {
         ClearNeighbor();
+        chainRounds = 0;
         if(bubbleGrids[r,c]==value)
           neighbors.Add(new Vector2Int(c, r));
         GetNeighborsWithValue(bubbleGrids, r, c, value, rowNum, colNum);
@@ -48,6 +50,7 @@ public class NeighborUtility : MonoBehaviour
                 neighbors.Add(new Vector2Int(nc, nr));
                 if (value > 0)
                 {
+                    chainRounds++;
                      GetNeighborsWithValue(bubbleGrids, nr, nc, value, rowNum, colNum);
                 }
             }

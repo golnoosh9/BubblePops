@@ -51,11 +51,11 @@ public class BubbleShooter : MonoBehaviour
           //  ghostCircleTransform.gameObject.SetActive(false);
             target = new List<Vector3>();
             Vector2 t = Camera.main.ScreenToWorldPoint(Input.mousePosition)-rect.position;
-            hitBall = Physics2D.Raycast(transform.position, t,100,1<<11);
+            hitBall = Physics2D.Raycast(transform.position, t,100,1<<11 | 1<<9);
 
-            if (hitBall.collider == null)
+            if (hitBall.collider!=null && hitBall.collider.gameObject.layer == 9)
             {
-                hitWall = Physics2D.Raycast(transform.position, t,100, 1 << 9);
+                hitWall = hitBall;// Physics2D.Raycast(transform.position, t,100, 1 << 9 );
                 hitBall = Physics2D.Raycast(hitWall.point, new Vector2(-t.x, t.y),100, 1 << 11);
                 // Debug.Log("wall intersect: " + hitWall.point+"   "+ new Vector2(-t.x, t.y));
                 if (hitBall.collider != null)
@@ -65,7 +65,7 @@ public class BubbleShooter : MonoBehaviour
                 }
 
             }
-            if (hitBall.collider != null)
+            if(hitBall.collider!=null)
             {
                 target.Add(hitBall.collider.GetComponentInParent<BubbleDataID>().GetNeighbor(hitBall.point,transform.position.z));
        

@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class BubbleGrid : MonoBehaviour
 {
+    public delegate void RetVoidArg3Int1String(int r, int c, int chainNum, string animTrigger);
+    public static event RetVoidArg3Int1String BubbleActivityEvent;
     Dictionary<Vector2Int, GameObject> bubbleCoordinateMap = new Dictionary<Vector2Int, GameObject>();
     int[,] bubbleGrids = new int[10,6];
     int rowNum = 10;
@@ -58,16 +60,7 @@ public class BubbleGrid : MonoBehaviour
 
         if (neighbors.Count > 0)
         {
-            neighbors.Add(new Vector2Int(c, r));
-            int newScore = score;
-            for (int i = 0; i < neighbors.Count-1; i++)
-            {
-                newScore++;
-            }
-            Vector2Int newBubblePosition = NeighborUtility.SearchInNodeNeighbors(neighbors, bubbleGrids, rowNum, colNum, newScore);
-            MergeBubbles(neighbors, score);
-          //  DeleteBubbleAt(newBubblePosition.y, newBubblePosition.x);
-            CreateNewBubble(newBubblePosition.y, newBubblePosition.x, newScore);
+            StartCoroutine(ProcessBubbleEffectInTime(r, c, score,neighbors));
         }
 
     }
@@ -80,17 +73,34 @@ public class BubbleGrid : MonoBehaviour
  
         for (int i = 0; i < bubbles.Count; i++)
         {
-            DeleteBubbleAt(bubbles[i].y, bubbles[i].x);
+          StartCoroutine ( DeleteBubbleAt(bubbles[i].y, bubbles[i].x));
 
         }
     }
 
+IEnumerator ProcessBubbleEffectInTime(int r, int c, int score, List<Vector2Int> neighbors)
+    {
+        neighbors.Add(new Vector2Int(c, r));
+        int newScore = score;
+        for (int i = 0; i < neighbors.Count - 1; i++)
+        {
+            newScore++;
+        }
+        Vector2Int newBubblePosition = NeighborUtility.SearchInNodeNeighbors(neighbors, bubbleGrids, rowNum, colNum, newScore);
+        MergeBubbles(neighbors, score);
+        yield return new WaitForSeconds(0.6f);
+        //  DeleteBubbleAt(newBubblePosition.y, newBubblePosition.x);
+        CreateNewBubble(newBubblePosition.y, newBubblePosition.x, newScore);
+    }
 
-void DeleteBubbleAt(int r, int c)
+    IEnumerator DeleteBubbleAt(int r, int c)
     {
         GameObject t = bubbleCoordinateMap[new Vector2Int(c, r)];
+        BubbleActivityEvent(r, c, NeighborUtility.chainRounds, "Shrink");
+        yield return new WaitForSeconds(0.5f);
         bubblePool.ReturnToPool(t);
         bubbleCoordinateMap.Remove(new Vector2Int(c, r));
+        bubbleGrids[r, c] = 0;
        
     }
 

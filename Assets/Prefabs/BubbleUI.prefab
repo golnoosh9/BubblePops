@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 3135200866081289965}
   - component: {fileID: 3135200866081289955}
   - component: {fileID: 3135200866081289964}
+  - component: {fileID: 2203891341107463557}
+  - component: {fileID: 1421472835}
   m_Layer: 11
   m_Name: BubbleUI
   m_TagString: Bubble
@@ -71,6 +73,37 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &2203891341107463557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3135200866081289966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca3dd0c7e1fa44938ba99073d3fcdd10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!95 &1421472835
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3135200866081289966}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: debb00e0bea134af0aac7081e1ca851e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3135200866244853477
 GameObject:
   m_ObjectHideFlags: 0
