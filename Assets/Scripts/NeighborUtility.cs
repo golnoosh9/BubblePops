@@ -28,7 +28,7 @@ public class NeighborUtility : MonoBehaviour
         Vector2[] directions;
 
 
-        if (r % 2 == 1)
+        if (r % 2 == BubbleDataID.offsetSwitch)
         {
             Vector2[] d = { new Vector2(-1, -1), new Vector2(0, -1), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(-1, 1), new Vector2(1, 0) };
             directions = d;
@@ -79,7 +79,7 @@ public class NeighborUtility : MonoBehaviour
             c = nodes[i].x;
             Vector2[] directions;
 
-            if (r % 2 == 1)
+            if (r % 2 == BubbleDataID.offsetSwitch)
             {
                 Vector2[] d = { new Vector2(-1, -1), new Vector2(0, -1), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(-1, 1), new Vector2(0, 1) };
                 directions = d;

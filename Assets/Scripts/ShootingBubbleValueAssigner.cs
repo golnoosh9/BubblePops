@@ -17,7 +17,7 @@ public class ShootingBubbleValueAssigner : MonoBehaviour
     void Start()
     {
         middleTransform = this.transform.position;
-        upcomingVal = Random.Range(1,9);
+        upcomingVal = Random.Range(1,7);
 
         GetComponent<BubbleShooter>().BubbleMoveDone += StartNewShootingRound;
         thisData = GetComponentInChildren<BubbleDataID>();
@@ -37,7 +37,7 @@ public class ShootingBubbleValueAssigner : MonoBehaviour
         }
         AssignValueToBubble(thisImage);
         thisData.SetNum(upcomingVal);
-        upcomingVal = Random.Range(1, 9);
+        upcomingVal = Random.Range(1, 7);
        // Debug.Log("inde: " + upcomingVal);
         AssignValueToBubble(upcomingBubble);
     }

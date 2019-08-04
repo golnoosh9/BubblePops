@@ -60,7 +60,7 @@ public class BubbleShooter : MonoBehaviour
             if (hitBall.collider!=null && hitBall.collider.gameObject.layer == 9)
             {
                 hitWall = hitBall;// Physics2D.Raycast(transform.position, t,100, 1 << 9 );
-                hitBall = Physics2D.Raycast(hitWall.point, new Vector2(-t.x, t.y),200, 1 << 11);
+                hitBall = Physics2D.Raycast(hitWall.point, new Vector2(-t.x, t.y+1),200, 1 << 11);
                 // Debug.Log("wall intersect: " + hitWall.point+"   "+ new Vector2(-t.x, t.y));
                 if (hitBall.collider != null)
                 {

@@ -70,6 +70,7 @@ public class BubblePool : MonoBehaviour
             t.GetComponent<BubbleDataID>().SetNum(bubbleValue);
             t.GetComponentInChildren<Image>().sprite = bubblePowerSprites[bubbleValue];
             t.GetComponentInChildren<Image>().enabled = true;
+            t.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(300, 300);
             return t;
         }
         InitialWarmUp();
@@ -82,6 +83,7 @@ public class BubblePool : MonoBehaviour
     {
        
             poolSize++;
+        bubbles.Insert(poolSize, b);
         StartCoroutine(DeleteWithDelay(b));
 
     }
@@ -89,9 +91,8 @@ public class BubblePool : MonoBehaviour
 
     IEnumerator DeleteWithDelay(GameObject b)
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.8f);
         b.GetComponent<RectTransform>().anchoredPosition = new Vector3(-1000, -1000, -1000);
-        bubbles.Insert(poolSize, b);
         b.GetComponent<BubbleAnimator>().ResetAnimation();
         b.SetActive(false);
     }

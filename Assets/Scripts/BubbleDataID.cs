@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class BubbleDataID : MonoBehaviour
 {
-    static int offsetSwitch=1;
+    public static int offsetSwitch=1;
     public delegate void RetVoidArgInt(int i);
   //  public event RetVoidArgInt PositionSet;
     public int bubbleNumber { get; private set; }

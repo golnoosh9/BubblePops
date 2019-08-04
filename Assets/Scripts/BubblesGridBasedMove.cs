@@ -8,6 +8,7 @@ public class BubblesGridBasedMove : MonoBehaviour
     public static event RetVoidArg2Int ConnectedBubble;
     public static event RetVoidArg2Int CheckForFalling;
     public delegate void RetVoidArgVoid();
+    public static event RetVoidArgVoid startingNighborCalc;
     public static event RetVoidArgVoid ScrollDown;
     public static event RetVoidArgVoid ScrollUp;
 
@@ -21,7 +22,7 @@ public class BubblesGridBasedMove : MonoBehaviour
 
     public static void CheckForFallingBubbles(int[,]bubbleGrid, int rowNum, int colNum)
     {
-
+        startingNighborCalc();
         connectedOnes = new List<Vector2Int>();
         List<Vector2Int> neighbors;
         for (int i = 0; i < colNum; i++)
@@ -75,16 +76,16 @@ public class BubblesGridBasedMove : MonoBehaviour
             if (rowEmpty == false)
                 break;
         }
-
-        if(fistFullRow<rowNum-3)
-        {
-            ScrollDown();
-         }
-
-        else if(fistFullRow>rowNum-3)
+        Debug.Log("first empty:  " + fistFullRow);
+        if(fistFullRow>rowNum-3)
         {
             ScrollUp();
-        }
+         }
+
+        //else if(fistFullRow>rowNum-3)
+        //{
+        //    ScrollUp();
+        //}
 
     }
 

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MoveBubble : MonoBehaviour
 {
+    public delegate void RetVoidArgInt2(int r, int c);
+    public static event RetVoidArgInt2 BubbleHitGround;
     BubbleDataID bubbleDataID;
     bool isConnected = false;
     bool move;
@@ -15,13 +17,20 @@ public class MoveBubble : MonoBehaviour
     }
     private void OnEnable()
     {
-        isConnected = false;
+        move = false;
+        isConnected = true;
         bubbleDataID = GetComponent<BubbleDataID>();
+        BubblesGridBasedMove.startingNighborCalc += RestartConnection;
         BubblesGridBasedMove.CheckForFalling += CheckForFalling;
         BubblesGridBasedMove.ConnectedBubble += SetToConnected;
         BubblesGridBasedMove.ScrollUp += MoveUp;
         BubblesGridBasedMove.ScrollDown += MoveDown;
 
+    }
+
+    void RestartConnection()
+    {
+        isConnected = false;
     }
 
     void SetToConnected(int r, int c)
@@ -34,6 +43,8 @@ public class MoveBubble : MonoBehaviour
     {
         if (isConnected == false)
         {
+            Debug.Log("falling:  " + name);
+            Debug.Break();
 //            Debug.Log("is falling:  " + name);
             move = true;
             target = new Vector3(transform.position.x, transform.position.y - 10, transform.position.z);
@@ -63,15 +74,24 @@ public class MoveBubble : MonoBehaviour
     {
         if (move == true)
         {
-            transform.position = Vector3.MoveTowards(transform.position, target,1*Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, target,5*Time.deltaTime);
             if (transform.position == target)
                 move = false;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.tag=="Ground")
+        {
+            BubbleHitGround(bubbleDataID.row, bubbleDataID.column);
         }
     }
 
 
     private void OnDisable()
     {
+        BubblesGridBasedMove.startingNighborCalc -= RestartConnection;
         BubblesGridBasedMove.CheckForFalling -= CheckForFalling;
         BubblesGridBasedMove.ConnectedBubble -= SetToConnected;
         BubblesGridBasedMove.ScrollUp -= MoveUp;
