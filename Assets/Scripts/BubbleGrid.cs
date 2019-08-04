@@ -64,7 +64,9 @@ public class BubbleGrid : MonoBehaviour
         }
         else
         {
+            BubblesGridBasedMove.CheckForFallingBubbles(bubbleGrids, rowNum, colNum);
             BubblesGridBasedMove.CheckScroll(bubbleGrids, rowNum, colNum);
+
             Debug.Log(ToString());
         }
         //  Debug.Log(ToString());
@@ -78,7 +80,7 @@ public class BubbleGrid : MonoBehaviour
 
         for (int j = 0; j < colNum; j++)
             {
-           StartCoroutine( DeleteBubbleAt(0, j));
+           DeleteBubbleAt(0, j);
             }
 
         for (int i = 1; i < rowNum; i++)
@@ -134,14 +136,13 @@ public class BubbleGrid : MonoBehaviour
         Vector2Int newBubblePosition = NeighborUtility.SearchInNodeNeighbors(neighbors, bubbleGrids, rowNum, colNum, newScore);
         for (int i = 0; i < neighbors.Count; i++)
         {
-            StartCoroutine(DeleteBubbleAt(neighbors[i].y, neighbors[i].x));
+            DeleteBubbleAt(neighbors[i].y, neighbors[i].x);
 
         }
         yield return new WaitForSeconds(1.1f);
         CreateNewBubble(newBubblePosition.y, newBubblePosition.x, newScore);
 
-        BubblesGridBasedMove.CheckForFallingBubbles(bubbleGrids, rowNum, colNum);
-        BubblesGridBasedMove.CheckScroll(bubbleGrids, rowNum, colNum);
+
         BubbleActivityEvent(newBubblePosition.y, newBubblePosition.x, NeighborUtility.chainRounds, "Enlarge");
         Debug.Log(ToString());
     }
@@ -151,12 +152,11 @@ public class BubbleGrid : MonoBehaviour
 
 
 
-    IEnumerator DeleteBubbleAt(int r, int c)
+    void DeleteBubbleAt(int r, int c)
     {
         GameObject t = bubbleCoordinateMap[new Vector2Int(c, r)];
         BubbleActivityEvent(r, c, NeighborUtility.chainRounds, "Shrink");
         bubbleCoordinateMap.Remove(new Vector2Int(c, r));
-        yield return new WaitForSeconds(1.01f);
         bubblePool.ReturnToPool(t);
         bubbleGrids[r, c] = 0;
 

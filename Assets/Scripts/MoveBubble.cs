@@ -15,6 +15,7 @@ public class MoveBubble : MonoBehaviour
     }
     private void OnEnable()
     {
+        isConnected = false;
         bubbleDataID = GetComponent<BubbleDataID>();
         BubblesGridBasedMove.CheckForFalling += CheckForFalling;
         BubblesGridBasedMove.ConnectedBubble += SetToConnected;
@@ -46,7 +47,7 @@ public class MoveBubble : MonoBehaviour
     {
       //  move = true;
         target = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
-        bubbleDataID.ModifyHeightOffset(-1);
+       // bubbleDataID.ModifyHeightOffset(-1);
         bubbleDataID.SetPosition(bubbleDataID.row - 1, bubbleDataID.column,true);
 
     }

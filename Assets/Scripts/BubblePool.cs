@@ -82,12 +82,20 @@ public class BubblePool : MonoBehaviour
     {
        
             poolSize++;
+        StartCoroutine(DeleteWithDelay(b));
+
+    }
+
+
+    IEnumerator DeleteWithDelay(GameObject b)
+    {
+        yield return new WaitForSeconds(1);
         b.GetComponent<RectTransform>().anchoredPosition = new Vector3(-1000, -1000, -1000);
-            bubbles.Insert(poolSize, b);
+        bubbles.Insert(poolSize, b);
         b.GetComponent<BubbleAnimator>().ResetAnimation();
         b.SetActive(false);
     }
 
 
-    
+
 }

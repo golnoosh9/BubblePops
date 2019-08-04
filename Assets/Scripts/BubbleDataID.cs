@@ -47,10 +47,7 @@ public class BubbleDataID : MonoBehaviour
         bubbleNumber = num;
     }
 
-    public void ModifyHeightOffset(int mod)
-    {
-      //  heightOffset += mod*thisRadius*2;
-    }
+
 
     public static void SwitchOffset()
     {
