@@ -146,6 +146,7 @@ public class BubbleGrid : MonoBehaviour
         for (int i = 0; i < neighbors.Count; i++)
         {
             DeleteBubbleAt(neighbors[i].y, neighbors[i].x);
+            BubbleActivityEvent(r, c, NeighborUtility.chainRounds, "Shrinking");
 
         }
         yield return new WaitForSeconds(0.9f);
