@@ -27,7 +27,7 @@ public class BubbleDataID : MonoBehaviour
        
         rect = GetComponent<RectTransform>();
         // thisRadius = GetComponentInChildren<CircleCollider2D>().radius;
-        heightOffset = 1 *( 2 * thisRadius);
+       // heightOffset = 1 *( 2 * thisRadius);
         row = -1;
         column = -1;
     }

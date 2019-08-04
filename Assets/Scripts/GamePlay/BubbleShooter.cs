@@ -29,9 +29,11 @@ public class BubbleShooter : MonoBehaviour
     BubbleDataID thisBubbleID;
     bool doneMove = false;
     bool startMove;
+    bool canShoot = false;
 
     private void Start()
     {
+        InGameNotification.GameStartNotification += EnableShooting;
         thisBubbleID = GetComponentInChildren<BubbleDataID>();
         lineRenderer = GetComponent<LineRenderer>();
         ghostCircleTransform.gameObject.SetActive(false);
@@ -43,6 +45,8 @@ public class BubbleShooter : MonoBehaviour
     }
     private void Update()
     {
+        if (canShoot == false)
+            return;
         if (Input.GetMouseButtonDown(0))
         {
             lineRenderer.enabled = true;
@@ -129,7 +133,7 @@ public class BubbleShooter : MonoBehaviour
         if(reachedTarget==false && target.Count>0)
         {
 //            Debug.Log("moving:  " + rect.anchoredPosition + "    " + target[0]);
-            transform.position = Vector3.MoveTowards(transform.position, target[0], 2 * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, target[0], 5 * Time.deltaTime);
         }
 
         if (reachedTarget==false &&target.Count>0 && transform.position== target[0])
@@ -152,6 +156,12 @@ public class BubbleShooter : MonoBehaviour
         //rb.MovePosition(new Vector2(transform.position.x, transform.position.y) + currentVelocity * Time.deltaTime);
     }
 
+
+    void EnableShooting()
+    {
+        canShoot = true;
+    }
+
     void AssignNewBubble()
     {
 
@@ -160,6 +170,12 @@ public class BubbleShooter : MonoBehaviour
        // currentBubbleNumber = Random.Range(1, 8);
         //GetComponentInChildren<Image>().sprite = BubblePool.bubblePowerSprites[currentBubbleNumber];
 
+    }
+
+
+    private void OnDestroy()
+    {
+        InGameNotification.GameStartNotification += EnableShooting;
     }
 
 
