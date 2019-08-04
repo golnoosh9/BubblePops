@@ -43,8 +43,9 @@ public class BubbleGrid : MonoBehaviour
 
 
 
-    void CreateNewBubble(int r, int c, int score)
+    void CreateNewBubble(int r, int c, int score,int count)
     {
+        count++;
 
         List<Vector2Int> neighbors = new List<Vector2Int>();
      
@@ -61,19 +62,19 @@ public class BubbleGrid : MonoBehaviour
 
         if (neighbors.Count > 0)
         {
-            StartCoroutine(ProcessBubbleEffectInTime(r, c, score,neighbors));
+            StartCoroutine(ProcessBubbleEffectInTime(r, c, score,neighbors,count));
         }
         else
         {
 
             BubblesGridBasedMove.CheckScroll(bubbleGrids, rowNum, colNum);
-            Debug.Log("before neighbor call");
-            Debug.Log(ToString());
+            //Debug.Log("before neighbor call");
+            //Debug.Log(ToString());
             
             BubblesGridBasedMove.CheckForFallingBubbles(bubbleGrids, rowNum, colNum);
-            Debug.Log("after neighbor call");
-            Debug.Log(ToString());
-            Debug.Break();
+            //Debug.Log("after neighbor call");
+            //Debug.Log(ToString());
+            //Debug.Break();
 
         }
         //  Debug.Log(ToString());
@@ -133,7 +134,7 @@ public class BubbleGrid : MonoBehaviour
 
     }
 
-    IEnumerator ProcessBubbleEffectInTime(int r, int c, int score, List<Vector2Int> neighbors)
+    IEnumerator ProcessBubbleEffectInTime(int r, int c, int score, List<Vector2Int> neighbors, int count)
     {
         neighbors.Add(new Vector2Int(c, r));
         int newScore = score;
@@ -148,11 +149,22 @@ public class BubbleGrid : MonoBehaviour
 
         }
         yield return new WaitForSeconds(0.9f);
-   
-        CreateNewBubble(newBubblePosition.y, newBubblePosition.x, newScore);
+        if (newScore >= 11)
+        {
+            neighbors = NeighborUtility.GetAllNeighbors(bubbleGrids, r, c, score, rowNum, colNum, false);
+            for (int i = 0; i < neighbors.Count; i++)
+            {
+                DeleteBubbleAt(neighbors[i].y, neighbors[i].x);
+            }
+        }
+        else
+        {
+            CreateNewBubble(newBubblePosition.y, newBubblePosition.x, newScore, count);
+        }
 
-
-        BubbleActivityEvent(newBubblePosition.y, newBubblePosition.x, NeighborUtility.chainRounds, "Enlarge");
+        Debug.Log("chain num:  "+count);
+        BubbleActivityEvent(newBubblePosition.y, newBubblePosition.x, count, "Enlarge");
+        BubbleActivityEvent(newBubblePosition.y, newBubblePosition.x,(int) Mathf.Pow(2,newScore), "Score");
         Debug.Log(ToString());
     }
 

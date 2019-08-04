@@ -43,8 +43,7 @@ public class MoveBubble : MonoBehaviour
     {
         if (isConnected == false)
         {
-            Debug.Log("falling:  " + name);
-            Debug.Break();
+
 //            Debug.Log("is falling:  " + name);
             move = true;
             target = new Vector3(transform.position.x, transform.position.y - 10, transform.position.z);

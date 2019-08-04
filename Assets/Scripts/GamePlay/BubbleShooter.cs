@@ -7,7 +7,7 @@ public class BubbleShooter : MonoBehaviour
 {
     LineRenderer lineRenderer;
     [SerializeField]Transform ghostCircleTransform;
-    public delegate void RetVoidArg3Int(int i1, int i2, int i3);
+    public delegate void RetVoidArg3Int(int i1, int i2, int i3,int i4);
     public static event RetVoidArg3Int BubbleArrived;
 
     public delegate void RetvoidArgBool(bool b);
@@ -138,7 +138,7 @@ public class BubbleShooter : MonoBehaviour
             reachedTarget = true;
             if (target.Count == 0)
             {
-                BubbleArrived(collidingRow, collidingCol, thisBubbleID.bubbleNumber);
+                BubbleArrived(collidingRow, collidingCol, thisBubbleID.bubbleNumber,0);
                 hitBall = new RaycastHit2D();
                 hitWall = new RaycastHit2D();
                 AssignNewBubble();
