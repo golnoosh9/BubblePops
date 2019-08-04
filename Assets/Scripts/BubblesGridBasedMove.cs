@@ -7,7 +7,17 @@ public class BubblesGridBasedMove : MonoBehaviour
     public delegate void RetVoidArg2Int(int r, int c);
     public static event RetVoidArg2Int ConnectedBubble;
     public static event RetVoidArg2Int CheckForFalling;
+    public delegate void RetVoidArgVoid();
+    public static event RetVoidArgVoid ScrollDown;
+    public static event RetVoidArgVoid ScrollUp;
+
     static List<Vector2Int> connectedOnes = new List<Vector2Int>();
+
+    //public static void OverallGridCheck(int[,]bubbleGrid, int rowNum, int colNum)
+    //{
+    //    CheckForFallingBubbles(bubbleGrid, rowNum, colNum);
+
+    //}
 
     public static void CheckForFallingBubbles(int[,]bubbleGrid, int rowNum, int colNum)
     {
@@ -24,6 +34,7 @@ public class BubblesGridBasedMove : MonoBehaviour
             
         }
         CheckForFalling(0, 0);
+      //  CheckScroll(bubbleGrid, rowNum, colNum);
     }
 
 
@@ -44,6 +55,42 @@ public class BubblesGridBasedMove : MonoBehaviour
 
         return;
     }
+
+
+    public static void CheckScroll(int[,] bubbleGrid, int rowNum, int colNum)
+    {
+        bool rowEmpty = true;
+        int fistFullRow=0;
+        for (int i = rowNum-1; i >= 0; i--)
+        {
+            for (int j = 0; j < colNum; j++)
+            {
+               if(bubbleGrid[i,j]>0)
+                {
+                    rowEmpty = false;
+                    fistFullRow = i;
+                    break;
+                }
+            }
+            if (rowEmpty == false)
+                break;
+        }
+
+        if(fistFullRow<rowNum-3)
+        {
+            ScrollDown();
+         }
+
+        else if(fistFullRow>rowNum-3)
+        {
+            ScrollUp();
+        }
+
+    }
+
+
+
+
 
 
 }

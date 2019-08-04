@@ -8,8 +8,10 @@ public class BubbleShooter : MonoBehaviour
     LineRenderer lineRenderer;
     [SerializeField]Transform ghostCircleTransform;
     public delegate void RetVoidArg3Int(int i1, int i2, int i3);
-    public static event RetVoidArg3Int BubbleComingIn;
     public static event RetVoidArg3Int BubbleArrived;
+
+    public delegate void RetvoidArgBool(bool b);
+    public event RetvoidArgBool BubbleMoveDone;
     Rigidbody2D rb;
     RectTransform rect;
     Vector2 currentVelocity;
@@ -24,13 +26,15 @@ public class BubbleShooter : MonoBehaviour
     public List<Vector3> target;
     bool reachedTarget;
     MoveBubble moveBubble;
-    int currentBubbleNumber=1;
+    BubbleDataID thisBubbleID;
     bool doneMove = false;
     bool startMove;
 
     private void Start()
     {
+        thisBubbleID = GetComponentInChildren<BubbleDataID>();
         lineRenderer = GetComponent<LineRenderer>();
+        ghostCircleTransform.gameObject.SetActive(false);
         middlePosition = transform.position;
       //  moveBubble = FindObjectOfType<MoveBubble>();
         rect = GetComponent<RectTransform>();
@@ -67,8 +71,24 @@ public class BubbleShooter : MonoBehaviour
             }
             if(hitBall.collider!=null)
             {
-                target.Add(hitBall.collider.GetComponentInParent<BubbleDataID>().GetNeighbor(hitBall.point,transform.position.z));
-       
+                Vector3 proposedCircle = hitBall.collider.GetComponentInParent<BubbleDataID>().GetNeighbor(hitBall.point, transform.position.z);
+               Collider2D col= Physics2D.OverlapCircle(proposedCircle, 0.45f);
+                if (col != null && col.gameObject.layer == 11)
+                {
+//                    Debug.Log(col.transform.parent.gameObject.name);
+                    target = new List<Vector3>();
+                }
+                else 
+                {
+                    target.Add(proposedCircle);
+                }
+
+                collidingCol = hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().GetNeighborCoord().x;
+                if(collidingCol<0 || collidingCol>5 )
+                {
+                    target = new List<Vector3>();
+                }
+
             }
 
             if(target.Count>0)
@@ -100,7 +120,6 @@ public class BubbleShooter : MonoBehaviour
                 startMove = true;
                 collidingRow = hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().GetNeighborCoord().y;
                 collidingCol = hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().GetNeighborCoord().x;
-                BubbleComingIn(collidingRow, collidingCol, currentBubbleNumber);
             }
 
         }
@@ -119,7 +138,7 @@ public class BubbleShooter : MonoBehaviour
             reachedTarget = true;
             if (target.Count == 0)
             {
-                BubbleArrived(collidingRow, collidingCol, currentBubbleNumber);
+                BubbleArrived(collidingRow, collidingCol, thisBubbleID.bubbleNumber);
                 hitBall = new RaycastHit2D();
                 hitWall = new RaycastHit2D();
                 AssignNewBubble();
@@ -137,8 +156,9 @@ public class BubbleShooter : MonoBehaviour
     {
 
         transform.position = middlePosition;
-        currentBubbleNumber = Random.Range(1, 8);
-        GetComponentInChildren<Image>().sprite = BubblePool.bubblePowerSprites[currentBubbleNumber];
+        BubbleMoveDone(true);
+       // currentBubbleNumber = Random.Range(1, 8);
+        //GetComponentInChildren<Image>().sprite = BubblePool.bubblePowerSprites[currentBubbleNumber];
 
     }
 

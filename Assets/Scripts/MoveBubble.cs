@@ -4,32 +4,76 @@ using UnityEngine;
 
 public class MoveBubble : MonoBehaviour
 {
-    bool isMoving = false;
+    BubbleDataID bubbleDataID;
+    bool isConnected = false;
+    bool move;
     Vector3 target;
-    RectTransform rect;
-    // Start is called before the first frame update
-    public void StartMove(Vector3 t)
+
+    private void Start()
     {
-        target = t;
-        isMoving = true;
+
+    }
+    private void OnEnable()
+    {
+        bubbleDataID = GetComponent<BubbleDataID>();
+        BubblesGridBasedMove.CheckForFalling += CheckForFalling;
+        BubblesGridBasedMove.ConnectedBubble += SetToConnected;
+        BubblesGridBasedMove.ScrollUp += MoveUp;
+        BubblesGridBasedMove.ScrollDown += MoveDown;
+
+    }
+
+    void SetToConnected(int r, int c)
+    {
+        if (r == bubbleDataID.row && c ==bubbleDataID.column)
+            isConnected = true;
+    }
+
+    void CheckForFalling(int dummy1, int dummy2)
+    {
+        if (isConnected == false)
+        {
+//            Debug.Log("is falling:  " + name);
+            move = true;
+            target = new Vector3(transform.position.x, transform.position.y - 10, transform.position.z);
+            //fall down
+        }
+        if (GetComponent<Animator>() != null)
+            isConnected = false;
+    }
+
+    void MoveUp()
+    {
+      //  move = true;
+        target = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        bubbleDataID.ModifyHeightOffset(-1);
+        bubbleDataID.SetPosition(bubbleDataID.row - 1, bubbleDataID.column,true);
+
+    }
+
+    void MoveDown()
+    {
+        move = true;
+        target = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+       // bubbleDataID.SetCoordinate(bubbleDataID.row + 1, bubbleDataID.column);
     }
 
     private void Update()
     {
-        if(isMoving)
+        if (move == true)
         {
-            transform.position = Vector3.MoveTowards(transform.position, target, 2*Time.deltaTime);
-          
+            transform.position = Vector3.MoveTowards(transform.position, target,1*Time.deltaTime);
+            if (transform.position == target)
+                move = false;
         }
     }
 
 
-    //IEnumerator MoveTwords(Vector3 t)
-    //{
-    //    while(t!=transform.position)
-    //    {
-    //        transform.position = Vector3.Lerp(transform.position, t, 1f);
-    //        yield return new WaitForSeconds(0.1f);
-    //    }
-    //}
+    private void OnDisable()
+    {
+        BubblesGridBasedMove.CheckForFalling -= CheckForFalling;
+        BubblesGridBasedMove.ConnectedBubble -= SetToConnected;
+        BubblesGridBasedMove.ScrollUp -= MoveUp;
+        BubblesGridBasedMove.ScrollDown -= MoveDown;
+    }
 }

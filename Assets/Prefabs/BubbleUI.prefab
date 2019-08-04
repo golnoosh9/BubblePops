@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3135200866081289964}
   - component: {fileID: 2203891341107463557}
   - component: {fileID: 1421472835}
+  - component: {fileID: 1555874738081654312}
   m_Layer: 11
   m_Name: BubbleUI
   m_TagString: Bubble
@@ -52,6 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbb855577110d430caaa3f45bea00788, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  offset: 0
 --- !u!50 &3135200866081289964
 Rigidbody2D:
   serializedVersion: 4
@@ -104,6 +106,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1555874738081654312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3135200866081289966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c5b96f14bcef495b9bd5c74041bba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3135200866244853477
 GameObject:
   m_ObjectHideFlags: 0

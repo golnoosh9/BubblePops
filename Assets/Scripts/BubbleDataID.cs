@@ -5,22 +5,26 @@ using UnityEngine.UI;
 
 public class BubbleDataID : MonoBehaviour
 {
+    static int offsetSwitch=1;
+    public delegate void RetVoidArgInt(int i);
+  //  public event RetVoidArgInt PositionSet;
     public int bubbleNumber { get; private set; }
     public int row { get; private set; }
     public int column { get; private set; }
+    public int offset;
     int thisRadius=150;
     int rowOffset = 0;
     int lastNeighborR;
     int lastNeighborC;
     RectTransform rect;
     float heightOffset;
-    bool fallDown;
-    bool isConnected = false;
+    Vector2 target;
+    bool move;
+
 
     private void Awake()
     {
-        if (GetComponent < Animator >()== null)
-            isConnected = true;
+       
         rect = GetComponent<RectTransform>();
         // thisRadius = GetComponentInChildren<CircleCollider2D>().radius;
         heightOffset = 1 *( 2 * thisRadius);
@@ -28,35 +32,13 @@ public class BubbleDataID : MonoBehaviour
         column = -1;
     }
 
-    private void OnEnable()
-    {
-        BubblesGridBasedMove.CheckForFalling += CheckForFalling;
-        BubblesGridBasedMove.ConnectedBubble += SetToConnected;
-    }
-
-    void SetToConnected(int r, int c)
-    {
-        if(r==row && c==column)
-          isConnected = true;
-    }
-
-    void CheckForFalling(int dummy1, int dummy2)
-    {
-        if(isConnected==false)
-        {
-            Debug.Log("is falling:  " + name);
-            fallDown = true;
-            //fall down
-        }
-        if(GetComponent<Animator>() != null)
-        isConnected = false;
-    }
-
     private void Update()
     {
-        if(fallDown==true)
+        if(move==true)
         {
-            transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, transform.position.y - 10, transform.position.z), 1);
+            rect.anchoredPosition = Vector2.MoveTowards(rect.anchoredPosition, target, 1000 * Time.deltaTime);
+            if (rect.anchoredPosition == target)
+                move = false;
         }
     }
 
@@ -65,16 +47,34 @@ public class BubbleDataID : MonoBehaviour
         bubbleNumber = num;
     }
 
-    public void SetPosition(int r, int c)
+    public void ModifyHeightOffset(int mod)
+    {
+      //  heightOffset += mod*thisRadius*2;
+    }
+
+    public static void SwitchOffset()
+    {
+        offsetSwitch = Mathf.Abs(1 - offsetSwitch);
+    }
+
+    public void SetPosition(int r, int c, bool smooth)
     {
         rowOffset = 0;
         row = r;
         column = c;
-        if (row % 2 == 1)
-            rowOffset = 1;
 
-      //  rect.anchoredPosition = new Vector3(0, 0, 0);
-        rect.anchoredPosition = new Vector3(column * thisRadius*2f-rowOffset*thisRadius, -row*(thisRadius*2f)-thisRadius+heightOffset,0 );
+        if (row % 2 == offsetSwitch )
+            rowOffset = 1;
+        offset = rowOffset;
+        //  rect.anchoredPosition = new Vector3(0, 0, 0);
+        target = new Vector2(column * thisRadius * 2f - rowOffset * thisRadius, -row * (thisRadius * 2f) - thisRadius + heightOffset);
+        if (smooth)
+        {
+            move = true;
+
+        }
+        else
+            rect.anchoredPosition = target;
     }
 
     public Vector3 GetNeighbor(Vector2 collisionPoint,float z)
@@ -114,9 +114,5 @@ public class BubbleDataID : MonoBehaviour
         return new Vector2Int(lastNeighborC, lastNeighborR);
     }
 
-    private void OnDisable()
-    {
-        BubblesGridBasedMove.CheckForFalling -= CheckForFalling;
-        BubblesGridBasedMove.ConnectedBubble -= SetToConnected;
-    }
+
 }

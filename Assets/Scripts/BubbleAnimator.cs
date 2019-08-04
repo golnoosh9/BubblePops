@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BubbleAnimator : MonoBehaviour
 {
+    public delegate void RetVoidArgInt2(int i, int j);
+    public static event RetVoidArgInt2 DoneShrinking;
     Animator animator;
     BubbleDataID bubbleData;
     // Start is called before the first frame update
@@ -33,6 +35,7 @@ public class BubbleAnimator : MonoBehaviour
         {
 
             animator.SetTrigger(animationTrigger);
+
         }
     }
 
@@ -49,5 +52,10 @@ public class BubbleAnimator : MonoBehaviour
     private void OnDestroy()
     {
         BubbleGrid.BubbleActivityEvent -= CheckForAnimation;
+    }
+
+    public void FinishShrinking()
+    {
+        DoneShrinking(bubbleData.row,bubbleData.column);
     }
 }

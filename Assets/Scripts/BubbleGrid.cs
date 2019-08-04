@@ -11,14 +11,16 @@ public class BubbleGrid : MonoBehaviour
     int[,] bubbleGrids = new int[10,6];
     int rowNum = 10;
     int colNum = 6;
+    bool smooth;
     BubblePool bubblePool;
     int initialBubbleNum = 6*7;
     bool mergeDone = false;
     // Start is called before the first frame update
     void Start()
     {
-        BubbleShooter.BubbleComingIn += IncomingBubble;
         BubbleShooter.BubbleArrived += CreateNewBubble;
+        BubblesGridBasedMove.ScrollUp += AddRowBelow;
+        BubblesGridBasedMove.ScrollDown += AddRowAbove;
         bubblePool = FindObjectOfType<BubblePool>();
         GenerateBubbles();
     }
@@ -29,6 +31,7 @@ public class BubbleGrid : MonoBehaviour
         int c = 0;
         for (int i = 0; i < initialBubbleNum; i++)
         {
+            smooth = true;
             AddBubbleOfTypeAt(r, c, Random.Range(1, 9));
             c = (c + 1) % colNum;
             if (c == 0)
@@ -38,19 +41,15 @@ public class BubbleGrid : MonoBehaviour
     }
 
 
-    void IncomingBubble(int r,int c,int score)
-    {
-
-
-    }
-
 
     void CreateNewBubble(int r, int c, int score)
     {
 
         List<Vector2Int> neighbors = new List<Vector2Int>();
-     //   Debug.Log("score: " + score);
+        Debug.Log("score: " + score);
+        smooth = false;
         AddBubbleOfTypeAt(r, c, score);
+ 
 
         neighbors = NeighborUtility.GetAllNeighbors(bubbleGrids, r, c, score, rowNum, colNum, false);
         for (int i = 0; i < neighbors.Count; i++)
@@ -63,7 +62,64 @@ public class BubbleGrid : MonoBehaviour
         {
             StartCoroutine(ProcessBubbleEffectInTime(r, c, score,neighbors));
         }
-      //  Debug.Log(ToString());
+        else
+        {
+            BubblesGridBasedMove.CheckScroll(bubbleGrids, rowNum, colNum);
+            Debug.Log(ToString());
+        }
+        //  Debug.Log(ToString());
+
+    }
+
+    void AddRowBelow()
+    {
+        BubbleDataID.SwitchOffset();
+        int[,] temp = new int[10,6];
+
+        for (int j = 0; j < colNum; j++)
+            {
+           StartCoroutine( DeleteBubbleAt(0, j));
+            }
+
+        for (int i = 1; i < rowNum; i++)
+        {
+            for (int j = 0; j < colNum; j++)
+            {
+                if (bubbleGrids[i, j] == 0)
+                    continue;
+              //  Debug.Log("key: " + i + "   " + j);
+                GameObject t = bubbleCoordinateMap[new Vector2Int(j, i)];
+                bubbleCoordinateMap.Remove(new Vector2Int(j, i));
+                bubbleCoordinateMap.Add(new Vector2Int(j , i-1),t);
+            }
+        }
+        for (int i = 0; i < rowNum-1; i++)
+        {
+            for (int j = 0; j < colNum; j++)
+            {
+                temp[i , j] = bubbleGrids[i+1, j];
+            }
+        }
+        bubbleGrids = temp;
+        Debug.Log(ToString());
+    }
+
+    void AddRowAbove()
+    {
+        BubbleDataID.SwitchOffset();
+        int[,] temp = new int[10, 6];
+        for (int j = 0; j < colNum; j++)
+        {
+            AddBubbleOfTypeAt(0, j, Random.Range(1, 9));
+        }
+        for (int i = 1; i < rowNum ; i++)
+        {
+            for (int j = 0; j < colNum; j++)
+            {
+                temp[i -1, j] = bubbleGrids[i, j];
+            }
+        }
+        bubbleGrids = temp;
 
     }
 
@@ -81,12 +137,13 @@ public class BubbleGrid : MonoBehaviour
             StartCoroutine(DeleteBubbleAt(neighbors[i].y, neighbors[i].x));
 
         }
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1.1f);
         CreateNewBubble(newBubblePosition.y, newBubblePosition.x, newScore);
-        Debug.Log(ToString());
-        BubblesGridBasedMove.CheckForFallingBubbles(bubbleGrids, rowNum, colNum);
-        BubbleActivityEvent(newBubblePosition.y, newBubblePosition.x, NeighborUtility.chainRounds, "Enlarge");
 
+        BubblesGridBasedMove.CheckForFallingBubbles(bubbleGrids, rowNum, colNum);
+        BubblesGridBasedMove.CheckScroll(bubbleGrids, rowNum, colNum);
+        BubbleActivityEvent(newBubblePosition.y, newBubblePosition.x, NeighborUtility.chainRounds, "Enlarge");
+        Debug.Log(ToString());
     }
 
 
@@ -98,9 +155,9 @@ public class BubbleGrid : MonoBehaviour
     {
         GameObject t = bubbleCoordinateMap[new Vector2Int(c, r)];
         BubbleActivityEvent(r, c, NeighborUtility.chainRounds, "Shrink");
+        bubbleCoordinateMap.Remove(new Vector2Int(c, r));
         yield return new WaitForSeconds(1.01f);
         bubblePool.ReturnToPool(t);
-        bubbleCoordinateMap.Remove(new Vector2Int(c, r));
         bubbleGrids[r, c] = 0;
 
     }
@@ -113,7 +170,9 @@ public class BubbleGrid : MonoBehaviour
         t = bubblePool.GetFromPool(score);
        
         bubbleCoordinateMap.Add(new Vector2Int(c, r), t);
-            t.GetComponent<BubbleDataID>().SetPosition(r, c);
+            t.GetComponent<BubbleDataID>().SetPosition(r, c,smooth);
+            
+      //  t.transform.position = new Vector3(0, 0, 0);
             t.SetActive(true);
             bubbleGrids[r, c] = score;
 
@@ -122,8 +181,9 @@ public class BubbleGrid : MonoBehaviour
 
     private void OnDestroy()
     {
-        BubbleShooter.BubbleComingIn -= IncomingBubble;
         BubbleShooter.BubbleArrived -= CreateNewBubble;
+        BubblesGridBasedMove.ScrollUp -= AddRowBelow;
+        BubblesGridBasedMove.ScrollDown -= AddRowAbove;
     }
 
 

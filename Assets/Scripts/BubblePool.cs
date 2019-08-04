@@ -69,7 +69,7 @@ public class BubblePool : MonoBehaviour
             poolSize--;
             t.GetComponent<BubbleDataID>().SetNum(bubbleValue);
             t.GetComponentInChildren<Image>().sprite = bubblePowerSprites[bubbleValue];
-            t.GetComponent<BubbleAnimator>().ResetAnimation();
+            t.GetComponentInChildren<Image>().enabled = true;
             return t;
         }
         InitialWarmUp();
@@ -82,9 +82,9 @@ public class BubblePool : MonoBehaviour
     {
        
             poolSize++;
-
+        b.GetComponent<RectTransform>().anchoredPosition = new Vector3(-1000, -1000, -1000);
             bubbles.Insert(poolSize, b);
-
+        b.GetComponent<BubbleAnimator>().ResetAnimation();
         b.SetActive(false);
     }
 
