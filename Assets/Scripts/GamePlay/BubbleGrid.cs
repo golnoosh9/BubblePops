@@ -31,7 +31,7 @@ public class BubbleGrid : MonoBehaviour
         for (int i = 0; i < initialBubbleNum; i++)
         {
             smooth = true;
-            AddBubbleOfTypeAt(r, c, Random.Range(1, 9));
+            AddBubbleOfTypeAt(r, c, Random.Range(1, GameConstants.maximumBubbleIndex));
             c = (c + 1) % colNum;
             if (c == 0)
                 r++;

@@ -55,7 +55,8 @@ public class BubbleShooter : MonoBehaviour
             List<Vector2> bubbleDataPack= hitBall.collider.GetComponentInParent<BubbleDataID>().GetNeighbor(hitBall.point, transform.position.z);
             collidingCol = (int)bubbleDataPack[0].x;
             collidingRow = (int)bubbleDataPack[0].y;
-            ghostCircleTransform.anchoredPosition = new Vector2(collidingCol * 150 * 2f - bubbleDataPack[1].x * 150, -collidingRow * (150 * 2f) - 150 + bubbleDataPack[1].y);
+            ghostCircleTransform.anchoredPosition = new Vector2(collidingCol * GameConstants.circleRadius * 2f - bubbleDataPack[1].x * GameConstants.circleRadius, 
+            -collidingRow * (GameConstants.circleRadius * 2f) - GameConstants.circleRadius + bubbleDataPack[1].y);
 
             Collider2D col = Physics2D.OverlapCircle(ghostCircleTransform.transform.position, 0.4f);
 
@@ -64,7 +65,7 @@ public class BubbleShooter : MonoBehaviour
             {
                 target = new List<Vector3>();
             }
-            else if(target.Count<3)
+            else if(target.Count<2)
             {
                 target.Add(ghostCircleTransform.transform.position);
             }
@@ -84,7 +85,11 @@ public class BubbleShooter : MonoBehaviour
 
         Vector2 t = mainCamera.ScreenToWorldPoint(Input.mousePosition) - rect.position;
         if (Vector2.Distance(lastMouse, t) > 0.01f)
+        {
             target = new List<Vector3>();
+            ghostCircleTransform.gameObject.SetActive(false);
+            lineRenderer.enabled = false;
+        }
         else
             return;
         lastMouse = t;
@@ -108,7 +113,7 @@ public class BubbleShooter : MonoBehaviour
     {
         if (target.Count > 0)
         {
-            ghostCircleTransform.gameObject.SetActive(false);
+
             lineRenderer.startColor = Color.green;
             lineRenderer.startWidth = 0.2f;
             lineRenderer.positionCount = target.Count + 1;
@@ -126,6 +131,7 @@ public class BubbleShooter : MonoBehaviour
     }
     private void Update()
     {
+
         if (canShoot == false)
             return;
         if (Input.GetMouseButtonDown(0))

@@ -34,7 +34,7 @@ public class BubblePool : MonoBehaviour
 
         for (int i = 0; i < initNum; i++)
         {
-            int index = Random.Range(1, 9);
+            int index = Random.Range(1, GameConstants.maximumBubbleIndex);
             GameObject tempg = Instantiate(bubblePrefab, bubbleParent);
             tempg.name = "Bubble_" + i;
             tempg.GetComponent<BubbleDataID>().SetNum(index);
