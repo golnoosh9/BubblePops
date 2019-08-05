@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class BubbleShooter : MonoBehaviour
 {
     LineRenderer lineRenderer;
-    [SerializeField]Transform ghostCircleTransform;
+    [SerializeField]RectTransform ghostCircleTransform;
     public delegate void RetVoidArg3Int(int i1, int i2, int i3,int i4);
     public static event RetVoidArg3Int BubbleArrived;
 
@@ -30,9 +30,12 @@ public class BubbleShooter : MonoBehaviour
     bool doneMove = false;
     bool startMove;
     bool canShoot = false;
+    Camera mainCamera;
+    Vector2 lastMouse = new Vector2();
 
     private void Start()
     {
+        mainCamera = Camera.main;
         InGameNotification.GameStartNotification += EnableShooting;
         thisBubbleID = GetComponentInChildren<BubbleDataID>();
         lineRenderer = GetComponent<LineRenderer>();
@@ -43,92 +46,113 @@ public class BubbleShooter : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         target = new List<Vector3>();
     }
+
+
+    void GetTargetCoordinate()
+    {
+        if (hitBall.collider != null)
+        {
+            List<Vector2> bubbleDataPack= hitBall.collider.GetComponentInParent<BubbleDataID>().GetNeighbor(hitBall.point, transform.position.z);
+            collidingCol = (int)bubbleDataPack[0].x;
+            collidingRow = (int)bubbleDataPack[0].y;
+            ghostCircleTransform.anchoredPosition = new Vector2(collidingCol * 150 * 2f - bubbleDataPack[1].x * 150, -collidingRow * (150 * 2f) - 150 + bubbleDataPack[1].y);
+
+            Collider2D col = Physics2D.OverlapCircle(ghostCircleTransform.transform.position, 0.4f);
+
+           
+            if (col != null)
+            {
+                target = new List<Vector3>();
+            }
+            else if(target.Count<3)
+            {
+                target.Add(ghostCircleTransform.transform.position);
+            }
+
+
+            if (collidingCol < 0 || collidingCol > 5)
+            {
+                target = new List<Vector3>();
+            }
+
+
+
+        }
+    }
+    void RayCastFromBall()
+    {
+
+        Vector2 t = mainCamera.ScreenToWorldPoint(Input.mousePosition) - rect.position;
+        if (Vector2.Distance(lastMouse, t) > 0.01f)
+            target = new List<Vector3>();
+        else
+            return;
+        lastMouse = t;
+        hitBall = Physics2D.Raycast(transform.position, t, 200, 1 << 9 | 1 << 11);
+
+        if (hitBall.collider != null && hitBall.collider.gameObject.layer == 9)
+        {
+            hitWall = hitBall;// Physics2D.Raycast(transform.position, t,100, 1 << 9 );
+            hitBall = Physics2D.Raycast(hitWall.point, new Vector2(-t.x, t.y + 1), 200, 1 << 11);
+            // Debug.Log("wall intersect: " + hitWall.point+"   "+ new Vector2(-t.x, t.y));
+            if (hitBall.collider != null)
+            {
+                target.Add(new Vector3(hitWall.point.x, hitWall.point.y, transform.position.z));
+
+            }
+
+        }
+    }
+
+    void DrawShootingPath()
+    {
+        if (target.Count > 0)
+        {
+            ghostCircleTransform.gameObject.SetActive(false);
+            lineRenderer.startColor = Color.green;
+            lineRenderer.startWidth = 0.2f;
+            lineRenderer.positionCount = target.Count + 1;
+            lineRenderer.SetPosition(0, this.transform.position);
+            for (int i = 0; i < target.Count; i++)
+            {
+                lineRenderer.SetPosition(i+1,target[i]);
+            }
+
+
+            ghostCircleTransform.gameObject.SetActive(true);
+            lineRenderer.enabled = true;
+ 
+        }
+    }
     private void Update()
     {
         if (canShoot == false)
             return;
         if (Input.GetMouseButtonDown(0))
         {
-            lineRenderer.enabled = true;
-            
             reachedTarget = true;
             shoot = true;
         }
         if (shoot)
         {
-          //  ghostCircleTransform.gameObject.SetActive(false);
-            target = new List<Vector3>();
-            Vector2 t = Camera.main.ScreenToWorldPoint(Input.mousePosition)-rect.position;
-            hitBall = Physics2D.Raycast(transform.position, t,200,1<<11 | 1<<9);
+            RayCastFromBall();
+            GetTargetCoordinate();
+            DrawShootingPath();
 
-            if (hitBall.collider!=null && hitBall.collider.gameObject.layer == 9)
+            if (Input.GetMouseButtonUp(0))
             {
-                hitWall = hitBall;// Physics2D.Raycast(transform.position, t,100, 1 << 9 );
-                hitBall = Physics2D.Raycast(hitWall.point, new Vector2(-t.x, t.y+1),200, 1 << 11);
-                // Debug.Log("wall intersect: " + hitWall.point+"   "+ new Vector2(-t.x, t.y));
-                if (hitBall.collider != null)
-                {
-                    target.Add(new Vector3(hitWall.point.x, hitWall.point.y, transform.position.z));
-          
-                }
-
-            }
-            if(hitBall.collider!=null)
-            {
-                Vector3 proposedCircle = hitBall.collider.GetComponentInParent<BubbleDataID>().GetNeighbor(hitBall.point, transform.position.z);
-               Collider2D col= Physics2D.OverlapCircle(proposedCircle, 0.45f);
-                if (col != null && col.gameObject.layer == 11)
-                {
-//                    Debug.Log(col.transform.parent.gameObject.name);
-                    target = new List<Vector3>();
-                }
-                else 
-                {
-                    target.Add(proposedCircle);
-                }
-
-                collidingCol = hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().GetNeighborCoord().x;
-                if(collidingCol<0 || collidingCol>5 )
-                {
-                    target = new List<Vector3>();
-                }
-
-            }
-
-            if(target.Count>0)
-            {
-                ghostCircleTransform.gameObject.SetActive(false);
-                lineRenderer.startColor = Color.green;
-                lineRenderer.startWidth = 0.2f;
-                lineRenderer.positionCount = target.Count + 1;
-                lineRenderer.SetPosition(0, this.transform.position);
-                for (int i = 0; i < target.Count; i++)
-                {
-
-                    lineRenderer.SetPosition(i+1, target[i]);
-                 
-                }
-                ghostCircleTransform.gameObject.SetActive(true);
-                ghostCircleTransform.position = target[target.Count - 1];
-            }
-
-
-
-
-            if (Input.GetMouseButtonUp(0)&& target.Count>0)
-            {
+                Debug.Log("mouse rel:  " + target.Count);
                 ghostCircleTransform.gameObject.SetActive(false);
                 lineRenderer.enabled = false;
                 reachedTarget = false;
                 shoot = false;
+            
                 startMove = true;
-                collidingRow = hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().GetNeighborCoord().y;
-                collidingCol = hitBall.collider.gameObject.GetComponentInParent<BubbleDataID>().GetNeighborCoord().x;
+       
+
             }
 
         }
-    
-
 
         if(reachedTarget==false && target.Count>0)
         {
@@ -157,6 +181,9 @@ public class BubbleShooter : MonoBehaviour
     }
 
 
+
+
+
     void EnableShooting()
     {
         canShoot = true;
@@ -167,8 +194,6 @@ public class BubbleShooter : MonoBehaviour
 
         transform.position = middlePosition;
         BubbleMoveDone(true);
-       // currentBubbleNumber = Random.Range(1, 8);
-        //GetComponentInChildren<Image>().sprite = BubblePool.bubblePowerSprites[currentBubbleNumber];
 
     }
 

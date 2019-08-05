@@ -27,11 +27,13 @@ public class BubblesGridBasedMove : MonoBehaviour
         List<Vector2Int> neighbors;
         for (int i = 0; i < colNum; i++)
         {
-
-            ConnectedBubble(0, colNum);
-            connectedOnes.Add(new Vector2Int(colNum, 0));
-            neighbors = NeighborUtility.GetAllNeighbors(bubbleGrid, 0, i, 0, rowNum, colNum, false);
-            CallNeighbors(bubbleGrid, rowNum, colNum, neighbors);
+            if (bubbleGrid[0, i] > 0)
+            {
+                ConnectedBubble(0, colNum);
+                connectedOnes.Add(new Vector2Int(colNum, 0));
+                neighbors = NeighborUtility.GetAllNeighbors(bubbleGrid, 0, i, 0, rowNum, colNum, false);
+                CallNeighbors(bubbleGrid, rowNum, colNum, neighbors);
+            }
             
         }
         CheckForFalling(0, 0);
@@ -76,8 +78,8 @@ public class BubblesGridBasedMove : MonoBehaviour
             if (rowEmpty == false)
                 break;
         }
-        Debug.Log("first empty:  " + fistFullRow);
-        if(fistFullRow>rowNum-3)
+
+        if(fistFullRow>rowNum-4)
         {
             ScrollUp();
          }

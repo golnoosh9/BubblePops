@@ -141,7 +141,7 @@ public class BubbleGrid : MonoBehaviour
             }
             BubbleActivityEvent(newBubblePosition.y, newBubblePosition.x, count, "Enlarge");
             BubbleActivityEvent(newBubblePosition.y, newBubblePosition.x, (int)Mathf.Pow(2, newScore), "Score");
-            Debug.Log(ToString());
+     
         }
     }
 
