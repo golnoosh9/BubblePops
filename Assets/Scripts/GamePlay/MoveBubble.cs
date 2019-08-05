@@ -73,7 +73,7 @@ public class MoveBubble : MonoBehaviour
     {
         if (move == true)
         {
-            transform.position = Vector3.MoveTowards(transform.position, target,5*Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, target,3*Time.deltaTime);
             if (transform.position == target)
                 move = false;
         }

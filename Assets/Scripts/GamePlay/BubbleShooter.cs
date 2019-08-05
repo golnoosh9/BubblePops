@@ -24,7 +24,6 @@ public class BubbleShooter : MonoBehaviour
     RaycastHit2D hitBall;
 
     public List<Vector3> target;
-    bool reachedTarget;
     MoveBubble moveBubble;
     BubbleDataID thisBubbleID;
     bool doneMove = false;
@@ -38,6 +37,7 @@ public class BubbleShooter : MonoBehaviour
         mainCamera = Camera.main;
         InGameNotification.GameStartNotification += EnableShooting;
         InGameNotification.GamePausednotification += DisableShooting;
+        BubbleGrid.DoneMove += EnableShooting;
         thisBubbleID = GetComponentInChildren<BubbleDataID>();
         lineRenderer = GetComponent<LineRenderer>();
         ghostCircleTransform.gameObject.SetActive(false);
@@ -83,10 +83,10 @@ public class BubbleShooter : MonoBehaviour
     }
     void RayCastFromBall()
     {
+       
 
         Vector2 t = mainCamera.ScreenToWorldPoint(Input.mousePosition) - rect.position;
-        Debug.Log("mouse pos: " + t.y);
-        if (t.y > 7.8)
+        if (t.y > GameConstants.yThreshold)
             return;
         if (Vector2.Distance(lastMouse, t) > 0.01f )
         {
@@ -133,14 +133,41 @@ public class BubbleShooter : MonoBehaviour
  
         }
     }
+
+    void MoveToTarget()
+    {
+        if (startMove == true && target.Count > 0)
+        {
+      
+            transform.position = Vector3.MoveTowards(transform.position, target[0], 5 * Time.deltaTime);
+        }
+
+        if (startMove == true && target.Count > 0 && transform.position == target[0])
+        {
+            target.RemoveAt(0);
+            startMove = false;
+            if (target.Count == 0)
+            {
+                BubbleArrived(collidingRow, collidingCol, thisBubbleID.bubbleNumber, 0);
+                hitBall = new RaycastHit2D();
+                hitWall = new RaycastHit2D();
+                AssignNewBubble();
+            }
+            else
+                startMove=true;
+
+
+        }
+
+    }
     private void Update()
     {
-
+        MoveToTarget();
         if (canShoot == false)
             return;
         if (Input.GetMouseButtonDown(0))
         {
-            reachedTarget = true;
+            startMove= false;
             shoot = true;
         }
         if (shoot)
@@ -151,10 +178,10 @@ public class BubbleShooter : MonoBehaviour
 
             if (Input.GetMouseButtonUp(0))
             {
-                Debug.Log("mouse rel:  " + target.Count);
+                DisableShooting();
+
                 ghostCircleTransform.gameObject.SetActive(false);
                 lineRenderer.enabled = false;
-                reachedTarget = false;
                 shoot = false;
             
                 startMove = true;
@@ -164,28 +191,7 @@ public class BubbleShooter : MonoBehaviour
 
         }
 
-        if(reachedTarget==false && target.Count>0)
-        {
-//            Debug.Log("moving:  " + rect.anchoredPosition + "    " + target[0]);
-            transform.position = Vector3.MoveTowards(transform.position, target[0], 5 * Time.deltaTime);
-        }
-
-        if (reachedTarget==false &&target.Count>0 && transform.position== target[0])
-        {
-            target.RemoveAt(0);
-            reachedTarget = true;
-            if (target.Count == 0)
-            {
-                BubbleArrived(collidingRow, collidingCol, thisBubbleID.bubbleNumber,0);
-                hitBall = new RaycastHit2D();
-                hitWall = new RaycastHit2D();
-                AssignNewBubble();
-            }
-            else
-                reachedTarget = false;
-
-
-        }
+       
 
         //rb.MovePosition(new Vector2(transform.position.x, transform.position.y) + currentVelocity * Time.deltaTime);
     }
@@ -200,7 +206,7 @@ public class BubbleShooter : MonoBehaviour
 
     void DisableShooting()
     {
-        target = new List<Vector3>();
+      
         canShoot = false;
     }
 
@@ -217,6 +223,7 @@ public class BubbleShooter : MonoBehaviour
     {
         InGameNotification.GameStartNotification -= EnableShooting;
         InGameNotification.GamePausednotification -= DisableShooting;
+        BubbleGrid.DoneMove -= EnableShooting;
     }
 
 

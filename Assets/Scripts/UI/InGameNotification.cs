@@ -40,7 +40,7 @@ public class InGameNotification : MonoBehaviour
         }
         if (activityType=="Enlarge")
         {
-            Debug.Log("in UI: " + chainNum);
+     
             if(chainNum>1)
             {
                 chainNumber.text = "x" + chainNum;

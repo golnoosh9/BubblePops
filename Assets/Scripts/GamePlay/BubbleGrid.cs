@@ -6,6 +6,8 @@ public class BubbleGrid : MonoBehaviour
 {
     public delegate void RetVoidArg3Int1String(int r, int c, int chainNum, string animTrigger);
     public static event RetVoidArg3Int1String BubbleActivityEvent;
+    public delegate void RetVoidArgVoid();
+    public static event RetVoidArgVoid DoneMove;
     Dictionary<Vector2Int, GameObject> bubbleCoordinateMap = new Dictionary<Vector2Int, GameObject>();
     int[,] bubbleGrids = new int[10,6];
     int rowNum = 10;
@@ -59,10 +61,8 @@ public class BubbleGrid : MonoBehaviour
         else
         {
 
-            BubblesGridBasedMove.CheckScroll(bubbleGrids, rowNum, colNum);
-            BubblesGridBasedMove.CheckForFallingBubbles(bubbleGrids, rowNum, colNum);
-            if(count>1)
-                BubbleActivityEvent(0, 0, count, "Create");
+            FinishBubbleRound(count);
+    
 
         }
     }
@@ -113,11 +113,45 @@ public class BubbleGrid : MonoBehaviour
             DeleteBubbleAt(neighbors[i].y, neighbors[i].x);
             BubbleActivityEvent(-1, -1, -1, "Shrinking");
         }
-    
-       
+
+  
         yield return new WaitForSeconds(0.9f);
-        int bubblesLeft=0;
-        for (int i = 0; i <rowNum; i++)
+
+        if(CheckForFinish()==false)
+        {
+            if (newScore >= GameConstants.maximumScore)
+            {
+                neighbors = NeighborUtility.GetAllNeighbors(bubbleGrids, r, c, score, rowNum, colNum, false);
+                for (int i = 0; i < neighbors.Count; i++)
+                {
+                    DeleteBubbleAt(neighbors[i].y, neighbors[i].x);
+                }
+                FinishBubbleRound(count);
+            }
+            else
+            {
+                CreateNewBubble(newBubblePosition.y, newBubblePosition.x, newScore, count);
+            }
+            BubbleActivityEvent(newBubblePosition.y, newBubblePosition.x, count, "Enlarge");
+            BubbleActivityEvent(-1, -1, (int)Mathf.Pow(2, newScore), "Score");
+     
+        }
+    }
+
+    void FinishBubbleRound(int count)
+    {
+        BubblesGridBasedMove.CheckScroll(bubbleGrids, rowNum, colNum);
+        BubblesGridBasedMove.CheckForFallingBubbles(bubbleGrids, rowNum, colNum);
+        DoneMove();
+        if (count > 1)
+            BubbleActivityEvent(-1, -1, count, "Create");
+    }
+
+
+    bool CheckForFinish()
+    {
+        int bubblesLeft = 0;
+        for (int i = 0; i < rowNum; i++)
         {
             for (int j = 0; j < colNum; j++)
             {
@@ -126,26 +160,10 @@ public class BubbleGrid : MonoBehaviour
         }
         if (bubblesLeft == 0)
         {
-            BubbleActivityEvent(r, c, NeighborUtility.chainRounds, "Finish");
+            BubbleActivityEvent(-1, -1, -1, "Finish");
+            return true;
         }
-        else
-        {
-            if (newScore >= 11)
-            {
-                neighbors = NeighborUtility.GetAllNeighbors(bubbleGrids, r, c, score, rowNum, colNum, false);
-                for (int i = 0; i < neighbors.Count; i++)
-                {
-                    DeleteBubbleAt(neighbors[i].y, neighbors[i].x);
-                }
-            }
-            else
-            {
-                CreateNewBubble(newBubblePosition.y, newBubblePosition.x, newScore, count);
-            }
-            BubbleActivityEvent(newBubblePosition.y, newBubblePosition.x, count, "Enlarge");
-            BubbleActivityEvent(newBubblePosition.y, newBubblePosition.x, (int)Mathf.Pow(2, newScore), "Score");
-     
-        }
+        return false;
     }
 
     void DeleteBubbleAt(int r, int c)
