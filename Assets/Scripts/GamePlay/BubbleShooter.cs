@@ -37,6 +37,7 @@ public class BubbleShooter : MonoBehaviour
     {
         mainCamera = Camera.main;
         InGameNotification.GameStartNotification += EnableShooting;
+        InGameNotification.GamePausednotification += DisableShooting;
         thisBubbleID = GetComponentInChildren<BubbleDataID>();
         lineRenderer = GetComponent<LineRenderer>();
         ghostCircleTransform.gameObject.SetActive(false);
@@ -61,7 +62,7 @@ public class BubbleShooter : MonoBehaviour
             Collider2D col = Physics2D.OverlapCircle(ghostCircleTransform.transform.position, 0.4f);
 
            
-            if (col != null)
+            if (col != null && col.gameObject.layer==11)
             {
                 target = new List<Vector3>();
             }
@@ -84,7 +85,10 @@ public class BubbleShooter : MonoBehaviour
     {
 
         Vector2 t = mainCamera.ScreenToWorldPoint(Input.mousePosition) - rect.position;
-        if (Vector2.Distance(lastMouse, t) > 0.01f)
+        Debug.Log("mouse pos: " + t.y);
+        if (t.y > 7.8)
+            return;
+        if (Vector2.Distance(lastMouse, t) > 0.01f )
         {
             target = new List<Vector3>();
             ghostCircleTransform.gameObject.SetActive(false);
@@ -186,13 +190,18 @@ public class BubbleShooter : MonoBehaviour
         //rb.MovePosition(new Vector2(transform.position.x, transform.position.y) + currentVelocity * Time.deltaTime);
     }
 
-
-
-
-
     void EnableShooting()
     {
         canShoot = true;
+        shoot = false;
+    }
+
+
+
+    void DisableShooting()
+    {
+        target = new List<Vector3>();
+        canShoot = false;
     }
 
     void AssignNewBubble()
@@ -206,7 +215,8 @@ public class BubbleShooter : MonoBehaviour
 
     private void OnDestroy()
     {
-        InGameNotification.GameStartNotification += EnableShooting;
+        InGameNotification.GameStartNotification -= EnableShooting;
+        InGameNotification.GamePausednotification -= DisableShooting;
     }
 
 

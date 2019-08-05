@@ -9,10 +9,12 @@ public class InGameNotification : MonoBehaviour
     public delegate void RetvoidArgVoid();
     public static event RetvoidArgVoid SoundToggleEvent;
     public static event RetvoidArgVoid GameStartNotification;
+    public static event RetvoidArgVoid GamePausednotification;
     [SerializeField] Text chainNumber;
     [SerializeField] Image barScore;
     [SerializeField] Text scoreText;
     [SerializeField] Text soundText;
+
 
     [SerializeField] GameObject mainMenu;
     [SerializeField] GameObject retryMenu;
@@ -52,6 +54,17 @@ public class InGameNotification : MonoBehaviour
             barScore.fillAmount = (float)totalScore / maxScore;
             scoreText.text = totalScore.ToString();
         }
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+    public void PauseGame()
+    {
+        Time.timeScale = 0;
+        GamePausednotification();
+        mainMenu.SetActive(true);
     }
 
     public void Retry()
