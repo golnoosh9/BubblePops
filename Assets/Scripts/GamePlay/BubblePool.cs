@@ -16,16 +16,19 @@ public class BubblePool : MonoBehaviour
 
     private void Awake()
     {
-        bubblePowerSprites.Add(1, Resources.Load<Sprite>("2"));
-        bubblePowerSprites.Add(2, Resources.Load<Sprite>("4"));
-        bubblePowerSprites.Add(3, Resources.Load<Sprite>("8"));
-        bubblePowerSprites.Add(4, Resources.Load<Sprite>("16"));
-        bubblePowerSprites.Add(5, Resources.Load<Sprite>("32"));
-        bubblePowerSprites.Add(6, Resources.Load<Sprite>("64"));
-        bubblePowerSprites.Add(7, Resources.Load<Sprite>("128"));
-        bubblePowerSprites.Add(8, Resources.Load<Sprite>("256"));
-        bubblePowerSprites.Add(9, Resources.Load<Sprite>("512"));
-        bubblePowerSprites.Add(10, Resources.Load<Sprite>("1024"));
+        if (bubblePowerSprites.Count == 0)
+        {
+            bubblePowerSprites.Add(1, Resources.Load<Sprite>("2"));
+            bubblePowerSprites.Add(2, Resources.Load<Sprite>("4"));
+            bubblePowerSprites.Add(3, Resources.Load<Sprite>("8"));
+            bubblePowerSprites.Add(4, Resources.Load<Sprite>("16"));
+            bubblePowerSprites.Add(5, Resources.Load<Sprite>("32"));
+            bubblePowerSprites.Add(6, Resources.Load<Sprite>("64"));
+            bubblePowerSprites.Add(7, Resources.Load<Sprite>("128"));
+            bubblePowerSprites.Add(8, Resources.Load<Sprite>("256"));
+            bubblePowerSprites.Add(9, Resources.Load<Sprite>("512"));
+            bubblePowerSprites.Add(10, Resources.Load<Sprite>("1024"));
+        }
         InitialWarmUp();
     }
 

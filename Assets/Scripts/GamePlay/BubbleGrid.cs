@@ -107,11 +107,14 @@ public class BubbleGrid : MonoBehaviour
             newScore++;
         }
         Vector2Int newBubblePosition = NeighborUtility.SearchInNodeNeighbors(neighbors, bubbleGrids, rowNum, colNum, newScore);
+
         for (int i = 0; i < neighbors.Count; i++)
         {
             DeleteBubbleAt(neighbors[i].y, neighbors[i].x);
-            BubbleActivityEvent(r, c, NeighborUtility.chainRounds, "Shrinking");
+            BubbleActivityEvent(-1, -1, -1, "Shrinking");
         }
+    
+       
         yield return new WaitForSeconds(0.9f);
         int bubblesLeft=0;
         for (int i = 0; i <rowNum; i++)
